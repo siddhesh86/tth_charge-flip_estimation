@@ -58,6 +58,30 @@ cats["OS_13TeV"] = {
 	{4,"mm_2jet_cp"}, {5,"mm_vbf"},
 	{6,"mm_1bjet"}, {7,"mm_2bjet"}, {8,"mm_MSSM_btag"}};
 */
+
+VString shape_systs = {"CMS_ttHl_btag_HFUp", 
+       "CMS_ttHl_btag_HFDown",	
+       "CMS_ttHl_btag_HFStats1Up", 
+       "CMS_ttHl_btag_HFStats1Down",
+       "CMS_ttHl_btag_HFStats2Up", 
+       "CMS_ttHl_btag_HFStats2Down",
+       "CMS_ttHl_btag_LFUp", 
+       "CMS_ttHl_btag_LFDown",	
+       "CMS_ttHl_btag_LFStats1Up", 
+       "CMS_ttHl_btag_LFStats1Down",
+       "CMS_ttHl_btag_LFStats2Up", 
+       "CMS_ttHl_btag_LFStats2Down",
+       "CMS_ttHl_btag_cErr1Up",
+       "CMS_ttHl_btag_cErr1Down",
+       "CMS_ttHl_btag_cErr2Up",
+       "CMS_ttHl_btag_cErr2Down",
+       "CMS_ttHl_JESUp",
+       "CMS_ttHl_JESDown",
+       "CMS_ttHl_tauESUp",
+       "CMS_ttHl_tauESDown"
+};
+
+
 cout << ">> Creating processes and observations...\n";
 for (string era : {"13TeV"}) {
 	for (auto chn : chns) {
@@ -120,57 +144,14 @@ using ch::syst::process;
 	  .AddSyst(cb, "QCD_norm", "lnN", SystMap<>::init(1.10));
 	*/
 
-  /*cb.cp().channel({"mt"}).signals()
-	.AddSyst(cb, "eff_t", "lnN", SystMap<>::init(1.08));
-        cb.cp().channel({"mt"}).signals()
-        .AddSyst(cb, "TES", "shape", SystMap<>::init(1.00));
-
-        //to be commented in case of producing datacards for the official analysis right now
-        cb.cp().channel({"mt"}).signals()
-        .AddSyst(cb, "RWeight1", "shape", SystMap<>::init(1.00));
-        cb.cp().channel({"mt"}).signals()
-        .AddSyst(cb, "RWeight2", "shape", SystMap<>::init(1.00));
-        cb.cp().channel({"mm"}).signals()
-        .AddSyst(cb, "RWeight1", "shape", SystMap<>::init(1.00));
-        cb.cp().channel({"mm"}).signals()
-        .AddSyst(cb, "RWeight2", "shape", SystMap<>::init(1.00));
-        //end of the part that has to be commented
-
-	cb.cp().channel({"mt"}).signals()
-	.AddSyst(cb, "eff_m", "lnN", SystMap<>::init(1.03));
-	cb.cp().channel({"mt"}).process({"TT"})
-	.AddSyst(cb, "eff_m", "lnN", SystMap<>::init(1.03));
-	cb.cp().channel({"mt"}).process({"ZLL"})
-	.AddSyst(cb, "eff_m", "lnN", SystMap<>::init(1.03));
-	cb.cp().channel({"mm"}).signals()
-	.AddSyst(cb, "eff_m", "lnN", SystMap<>::init(1.06));
-        cb.cp().channel({"mm"}).signals()
-	.AddSyst(cb, "MES", "shape", SystMap<>::init(1.00));
-        cb.cp().channel({"mm"}).process({"ZTT"})
-	.AddSyst(cb, "MES", "shape", SystMap<>::init(1.00));
-        cb.cp().channel({"mt"}).signals()
-	.AddSyst(cb, "MES", "shape", SystMap<>::init(1.00));
-        cb.cp().channel({"mt"}).process({"ZLL"})
-	.AddSyst(cb, "MES", "shape", SystMap<>::init(1.00));
-        cb.cp().channel({"mm"}).signals()
-	.AddSyst(cb, "MRES", "shape", SystMap<>::init(1.00));
-	cb.cp().channel({"mm"}).process({"TT"})
-	.AddSyst(cb, "eff_m", "lnN", SystMap<>::init(1.06));
-        cb.cp().channel({"mm"}).process({"TT"})
-	.AddSyst(cb, "MES", "shape", SystMap<>::init(1.00));
-        cb.cp().channel({"mt"}).process({"TT"})
-	.AddSyst(cb, "MES", "shape", SystMap<>::init(1.00));
-	cb.cp().channel({"mm"}).signals()
-	.AddSyst(cb, "eff_btag", "lnN", SystMap<>::init(1.06));
-	cb.cp().channel({"mt"}).signals()
-	.AddSyst(cb, "eff_btag", "lnN", SystMap<>::init(1.06));
-	cb.cp().channel({"mm"}).backgrounds()
-	.AddSyst(cb, "eff_btag", "lnN", SystMap<>::init(1.06));
-	cb.cp().channel({"mt"}).backgrounds()
-	.AddSyst(cb, "eff_btag", "lnN", SystMap<>::init(1.06));
-  */
-
   
+  for (auto chn : chns) {
+	  for (auto shape_syst : shape_systs) {
+      cb.cp().channel({chn}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+      cb.cp().channel({chn}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+    }
+  }
+
 	cout << ">> Extracting histograms from input root files...\n";
 	for (string era : {"13TeV"}) {
 		for (string chn : chns) {
