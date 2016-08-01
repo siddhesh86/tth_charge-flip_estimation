@@ -80,13 +80,49 @@ def make_gen_check():
   x = solve_matrix(make_cat_ratios_from_gen())
   print_solution(x)
 
+
+def calculate_M(Aw):
+  #print W
+  M = np.dot(np.linalg.inv( np.dot(np.transpose(Aw), Aw) ) , np.transpose(Aw))
+  #print M
+  return M
+
+def calculate_rates(M, b):
+  return np.dot(M, b)
+
+def calculate_uncertainties(M, deltab):
+  print "1", np.square(np.dot(M, deltab))
+  print "2", np.dot(M, deltab)
+  uncs = [] 
+  for i in range(6):    
+    uncs.append(0)
+    for k in range(21):
+      uncs[i] += (M[i, k] * deltab[k])**2
+    uncs[i] = math.sqrt(uncs[i])
+  return np.array(uncs)
+
+def print_solution_with_uncertainties(x, uncs):
+  for i in range(len(x)):
+    print x[i]*100, "+-", uncs[i]*100
+
+def calculate(catRatios):
+  A = make_coefficient_matrix()
+  (b, W) = make_category_matrix(catRatios)
+  w = np.sqrt(np.diag(1/W))
+  Aw = np.dot(w, A)  
+  M = calculate_M(Aw)
+  bw = np.dot(w, b)
+  rates = calculate_rates(M, bw)
+  uncs = calculate_uncertainties(M, W)
+  print_solution_with_uncertainties(rates.tolist(), uncs.tolist())
+
 if __name__ == "__main__":
-  for file_cats in ["fit_output_data_oldDY_notrig/results_cat.txt", "fit_output_data_newDY_notrig/results_cat.txt", "fit_output_data_newDY/results_cat.txt",
-        "fit_output_pseudodata_oldDY_notrig/results_cat.txt", "fit_output_pseudodata_newDY_notrig/results_cat.txt", "fit_output_pseudodata_newDY/results_cat.txt"]:
-    print file_cats
+  for file_cats in ["fit_output_pseudodata_testnewconf/results_cat.txt"]:
+    #print file_cats
     categoryRatios = readCategoryRatios(file_cats)
-    print categoryRatios  
-    x = solve_matrix(categoryRatios)
-    print_solution(x)
+    #print categoryRatios  
+    #x = solve_matrix(categoryRatios)
+    #print_solution(x)
     #print "_"*80
+    calculate(categoryRatios)
     #make_gen_check()
