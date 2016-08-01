@@ -157,9 +157,9 @@ using ch::syst::process;
 		for (string chn : chns) {
 			string file = aux_shapes+ "/histograms_harvested_stage2_charge_flip.root";
 			cb.cp().channel({chn}).backgrounds().ExtractShapes(
-					file, chn+"/$BIN/$PROCESS", "SS/$BIN/$PROCESS_$SYSTEMATIC");
+					file, chn+"/$BIN/$PROCESS", chn+"/$BIN/$PROCESS_$SYSTEMATIC");
 			cb.cp().channel({chn}).signals().ExtractShapes(
-					file, chn +"/$BIN/$PROCESS", "SS/$BIN/$PROCESS_$SYSTEMATIC");
+					file, chn +"/$BIN/$PROCESS", chn+"/$BIN/$PROCESS_$SYSTEMATIC");
 		}
 	}
 

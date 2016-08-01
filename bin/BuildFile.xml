@@ -1,7 +1,6 @@
-<bin file="ChargeFlip.cpp" name="ChargeFlipDC">
+<bin file="ChargeFlip.cpp" name="ChargeFlipDC"></bin>
 <bin file="FitCF.cpp" name="FitCF"></bin>
 <use name="CombineHarvester/CombineTools"/>
-</bin>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>
