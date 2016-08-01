@@ -45,3 +45,12 @@ python make_fits.py
 ```bash
 FitCF
 ```
+
+##Miscellaneous
+#Setting fit plots to logarithmic scale
+Run
+# Final fit
+```bash
+bash macros/set_plots_to_logscale.sh
+```
+This replaces the PostFitShapesFromWorkspace.cpp that is part of CombineHarvester with a modified version that produces the plots in logscale
