@@ -47,9 +47,8 @@ FitCF
 ```
 
 ##Miscellaneous
-#Setting fit plots to logarithmic scale
+###Setting fit plots to logarithmic scale
 Run
-### Final fit
 ```bash
 bash macros/set_plots_to_logscale.sh
 ```
