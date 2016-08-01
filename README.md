@@ -31,17 +31,17 @@ git clone git@github.com:HEP-KBFI/tth_charge-flip_estimation.git $CMSSW_BASE/src
 ```
 
 ## Running
-# Datacard creation
+### Datacard creation
 For datacard creation, run:
 ```bash
 ChargeFlipDC
 ```
-# Fit 21 electron pair categories and make plots
+### Fit 21 electron pair categories and make plots
 ```bash
 python make_fits.py
 ```
 
-# Final fit
+### Final fit
 ```bash
 FitCF
 ```
@@ -49,7 +49,7 @@ FitCF
 ##Miscellaneous
 #Setting fit plots to logarithmic scale
 Run
-# Final fit
+### Final fit
 ```bash
 bash macros/set_plots_to_logscale.sh
 ```
