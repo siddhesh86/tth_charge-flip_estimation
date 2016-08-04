@@ -1,4 +1,4 @@
-cp $CMSSW_BASE/src/tthAnalysis/ChargeFlipEstimation/macros/PostFitShapesFromWorkspace.cpp $CMSSW_BASE/src/CombineHarvester/CombineTools/bin/PostFitShapesFromWorkspace.cpp
+cp $CMSSW_BASE/src/tthAnalysis/ChargeFlipEstimation/macros/MaxLikelihoodFit.cc $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/src/
 cd $CMSSW_BASE/src
 scram b -j8
 cd -

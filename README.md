@@ -52,4 +52,4 @@ Run
 ```bash
 bash macros/set_plots_to_logscale.sh
 ```
-This replaces the PostFitShapesFromWorkspace.cpp that is part of CombineHarvester with a modified version that produces the plots in logscale
+This replaces the MaxLikelihoodFit.cpp that is part of Combine with a modified version that also produces the plots in logscale
