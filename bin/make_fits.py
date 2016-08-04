@@ -15,13 +15,19 @@ def mkdir_p(path):
             raise
 
 
-datacard_dir = "output_pseudodata_testnewconf"
+datacard_dir = "output_data_eleESER"
 
 
 def read_fit_result(fit_file, postfit_file):
   ROOT.gROOT.SetBatch(True)
+  f2 = TFile(postfit_file)
+  #POSTFIT SCALED TO SIGNAL r = 1! -> make changes
+  fail_h = f2.Get("fail_prefit/DY")
+  pass_h = f2.Get("pass_prefit/DY")
+
   f = TFile(fit_file)
   tree = f.Get("tree_fit_sb")
+  
   tree.Draw("mu>>hist")
   hist = ROOT.gDirectory.Get("hist")
   tree.Draw("muErr>>histLo")
@@ -31,12 +37,7 @@ def read_fit_result(fit_file, postfit_file):
   mu = hist.GetMean()
   muLoErr = histLo.GetMean()
   muHiErr = histHi.GetMean()
-  #print "MYY", mu,muLoErr, muHiErr
-  f2 = TFile(postfit_file)
-  #POSTFIT SCALED TO SIGNAL r = 1! -> make changes
-  fail_h = f2.Get("fail_prefit/DY")
-  pass_h = f2.Get("pass_prefit/DY")
-  #print postfit_file
+  
   try:
     #postFit distributions are scaled to scale factor 1, need to multiply by fitted number
     bestFit = mu * pass_h.Integral() / (fail_h.Integral() + pass_h.Integral())
@@ -71,7 +72,10 @@ def combine_cards():
     this_card = "%s/card_%d.txt" % (dc_dir, bin)
     this_ws = "%s/workspace_%d.root" %(ws_dir, bin)
     print "combineCards.py pass=%s/SScards/htt_SS_%d_13TeV.txt fail=%s/cards/OScards/htt_OS_%d_13TeV.txt > %s" % (dc_dir, bin, datacard_dir, bin, this_card)
-    call("combineCards.py pass=%s/SScards/htt_SS_%d_13TeV.txt fail=%s/cards/OScards/htt_OS_%d_13TeV.txt > %s" % (dc_dir, bin, datacard_dir, bin, this_card), shell = True)
+    if bin == 6 and "_data" in dc_dir: #Exclude shape systematics when all are zero
+      call("combineCards.py -s pass=%s/SScards/htt_SS_%d_13TeV.txt fail=%s/cards/OScards/htt_OS_%d_13TeV.txt > %s" % (dc_dir, bin, datacard_dir, bin, this_card), shell = True)
+    else:
+      call("combineCards.py pass=%s/SScards/htt_SS_%d_13TeV.txt fail=%s/cards/OScards/htt_OS_%d_13TeV.txt > %s" % (dc_dir, bin, datacard_dir, bin, this_card), shell = True)
     
     #Hack to prevent PostFitShapesFromWorkspace messing up directory structure
     call("cp %s ." % (this_card), shell = True)
@@ -82,7 +86,7 @@ def combine_cards():
     if "_data_oldDY" in fit_dir and (bin == 9 or bin == 15 or bin == 19):
       call("combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties --minimizerStrategy=2" % (this_ws, fit_dir), shell = True)      
     else:
-      call("combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties" % (this_ws, fit_dir), shell = True)
+      call("combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties  --minimizerStrategy=2" % (this_ws, fit_dir), shell = True)
     print "combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties" % (this_ws, fit_dir)
     print "PostFitShapesFromWorkspace -d %s -w %s -o %s/output_postfit.root -f %s/mlfit.root:fit_s --postfit --sampling --print" % ("card_%d.txt" % (bin), this_ws, fit_dir, fit_dir)
     call("PostFitShapesFromWorkspace -d %s -w %s -o %s/output_postfit.root -f %s/mlfit.root:fit_s --postfit --sampling --print" % ("card_%d.txt" % (bin), this_ws, fit_dir, fit_dir), shell=True)
