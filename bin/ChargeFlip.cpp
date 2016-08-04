@@ -18,7 +18,7 @@ int main() {
 	//! [part1]
 	// First define the location of the "auxiliaries" directory where we can
 	// source the input files containing the datacard shapes
-	string aux_shapes = "/home/andres/tth/histosCF_pseudodata_testnewconf/histograms/";
+	string aux_shapes = "/home/andres/tth/histosCF_data_eleESER/histograms/";
 
 	// Create an empty CombineHarvester instance that will hold all of the
 	// datacard configuration and histograms etc.
@@ -59,7 +59,7 @@ cats["OS_13TeV"] = {
 	{6,"mm_1bjet"}, {7,"mm_2bjet"}, {8,"mm_MSSM_btag"}};
 */
 
-VString shape_systs = {"CMS_ttHl_btag_HFUp", 
+/*VString shape_systs = {"CMS_ttHl_btag_HFUp", 
        "CMS_ttHl_btag_HFDown",	
        "CMS_ttHl_btag_HFStats1Up", 
        "CMS_ttHl_btag_HFStats1Down",
@@ -79,6 +79,12 @@ VString shape_systs = {"CMS_ttHl_btag_HFUp",
        "CMS_ttHl_JESDown",
        "CMS_ttHl_tauESUp",
        "CMS_ttHl_tauESDown"
+};*/
+
+VString shape_systs = {"CMS_ttHl_electronESBarrel",
+    "CMS_ttHl_electronESEndcap"};
+
+VString shape_systs_signal = {"CMS_ttHl_electronER"
 };
 
 
@@ -110,17 +116,17 @@ using ch::syst::process;
 
   //syst on normalization
   cb.cp().channel({"SS"}).signals()
-	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(1.1));
+	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"SS"}).process({"DY_fake"})
-	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(1.30));
+	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"SS"}).process({"WJets"})
-	  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(1.30));
+	  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"SS"}).process({"Singletop"})
-	  .AddSyst(cb, "singletop_norm", "lnN", SystMap<>::init(1.30));
+	  .AddSyst(cb, "singletop_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"SS"}).process({"Diboson"})
-	  .AddSyst(cb, "diboson_norm", "lnN", SystMap<>::init(1.30));
+	  .AddSyst(cb, "diboson_norm", "lnN", SystMap<>::init(1.5));
   cb.cp().channel({"SS"}).process({"TTbar"})
-	  .AddSyst(cb, "ttbar_norm", "lnN", SystMap<>::init(1.30));
+	  .AddSyst(cb, "ttbar_norm", "lnN", SystMap<>::init(1.5));
 	
   cb.cp().channel({"OS"}).signals()
 	  .AddSyst(cb, "lumi", "lnN", SystMap<>::init(1.05));
@@ -129,17 +135,17 @@ using ch::syst::process;
 
   //syst on normalization
 	cb.cp().channel({"OS"}).signals()
-	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(1.1));
+	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"OS"}).process({"DY_fake"})
-	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(1.30));
+	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"OS"}).process({"WJets"})
-	  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(1.30));
+	  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"OS"}).process({"Singletop"})
-	  .AddSyst(cb, "singletop_norm", "lnN", SystMap<>::init(1.30));
+	  .AddSyst(cb, "singletop_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"OS"}).process({"Diboson"})
-	  .AddSyst(cb, "diboson_norm", "lnN", SystMap<>::init(1.30));
+	  .AddSyst(cb, "diboson_norm", "lnN", SystMap<>::init(1.5));
   cb.cp().channel({"OS"}).process({"TTbar"})
-	  .AddSyst(cb, "ttbar_norm", "lnN", SystMap<>::init(1.30));
+	  .AddSyst(cb, "ttbar_norm", "lnN", SystMap<>::init(1.5));
 	/*cb.cp().channel({"OS"}).process({"QCD"})
 	  .AddSyst(cb, "QCD_norm", "lnN", SystMap<>::init(1.10));
 	*/
@@ -149,6 +155,9 @@ using ch::syst::process;
 	  for (auto shape_syst : shape_systs) {
       cb.cp().channel({chn}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
       cb.cp().channel({chn}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+    }
+    for (auto shape_syst_sig : shape_systs_signal) {
+      cb.cp().channel({chn}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
     }
   }
 
@@ -187,7 +196,7 @@ using ch::syst::process;
 
 
 	for (string chn : chns) {
-                string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_pseudodata_testnewconf/cards/"+chn+"cards/").c_str();
+                string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_data_eleESER/cards/"+chn+"cards/").c_str();
                 boost::filesystem::create_directories(folder);
                 boost::filesystem::create_directories(folder + "/common");
 		TFile output((folder + "/common/htt_" + chn + ".input.root").c_str(),
