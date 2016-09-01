@@ -134,8 +134,8 @@ bool MaxLikelihoodFit::runSpecific(RooWorkspace *w, RooStats::ModelConfig *mc_s,
       c1 = new TCanvas("c1","c1");
       c1log = new TCanvas("c1log","c1log");
       c1log->SetLogy();
+      c1->cd();
   }
-  c1->cd();
   // Make pre-plots before the fit
   r->setVal(preFitValue_);
   if (makePlots_) {
