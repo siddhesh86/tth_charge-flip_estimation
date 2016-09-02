@@ -30,82 +30,51 @@ int main() {
 	// the vector below specifies a bin name and corresponding bin_id.
 	VString chns = {"SS", "OS"};
 
-map<string, VString> bkg_procs;
-//bkg_procs["SS"] = {"TTZ", "WZ", "TTW", "signal", "Rares", "additional_signal_overlap", "background_data_singletop","background_data_WJets","background_data_WW","background_data_ZZ","background_data_TTJets"};
-//bkg_procs["OS"] = {"TTZ", "WZ", "TTW", "signal", "Rares", "additional_signal_overlap", "background_data_singletop","background_data_WJets","background_data_WW","background_data_ZZ","background_data_TTJets"};
-bkg_procs["SS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
-bkg_procs["OS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
-map<string, VString> sig_procs;
-sig_procs["SS"] = {"DY"};
-sig_procs["OS"] = {"DY"};
+    map<string, VString> bkg_procs;
+    bkg_procs["SS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
+    bkg_procs["OS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
+    map<string, VString> sig_procs;
+    sig_procs["SS"] = {"DY"};
+    sig_procs["OS"] = {"DY"};
 
-map<string, Categories> cats;
-cats["SS_13TeV"] = {
-	{0,"BB_LL"},{1,"BB_ML"},{2,"BB_MM"},{3,"BB_HL"},{4,"BB_HM"},{5,"BB_HH"},
-  {6,"EE_LL"},{7,"EE_ML"},{8,"EE_MM"},{9,"EE_HL"},{10,"EE_HM"},{11,"EE_HH"},
-  {12,"BE_LL"},{13,"BE_ML"},{14,"EB_ML"},{15,"BE_MM"},{16,"BE_HL"},{17,"EB_HL"},
-  {18,"BE_HM"},{19,"EB_HM"},{20,"BE_HH"},};
-cats["OS_13TeV"] = {
-	//{0,"mt_inclusive"},
-	{0,"BB_LL"},{1,"BB_ML"},{2,"BB_MM"},{3,"BB_HL"},{4,"BB_HM"},{5,"BB_HH"},
-  {6,"EE_LL"},{7,"EE_ML"},{8,"EE_MM"},{9,"EE_HL"},{10,"EE_HM"},{11,"EE_HH"},
-  {12,"BE_LL"},{13,"BE_ML"},{14,"EB_ML"},{15,"BE_MM"},{16,"BE_HL"},{17,"EB_HL"},
-  {18,"BE_HM"},{19,"EB_HM"},{20,"BE_HH"},};
-/*cats["mm_13TeV"] = {
-	//{0,"mm_inclusive"},
-	{0,"mm_0jet"}, {1,"mm_1jet_zpt_loose"},
-	{2,"mm_1jet_zpt_medium"},{3,"mm_1jet_zpt_tight"},
-	{4,"mm_2jet_cp"}, {5,"mm_vbf"},
-	{6,"mm_1bjet"}, {7,"mm_2bjet"}, {8,"mm_MSSM_btag"}};
-*/
-
-/*VString shape_systs = {"CMS_ttHl_btag_HFUp", 
-       "CMS_ttHl_btag_HFDown",	
-       "CMS_ttHl_btag_HFStats1Up", 
-       "CMS_ttHl_btag_HFStats1Down",
-       "CMS_ttHl_btag_HFStats2Up", 
-       "CMS_ttHl_btag_HFStats2Down",
-       "CMS_ttHl_btag_LFUp", 
-       "CMS_ttHl_btag_LFDown",	
-       "CMS_ttHl_btag_LFStats1Up", 
-       "CMS_ttHl_btag_LFStats1Down",
-       "CMS_ttHl_btag_LFStats2Up", 
-       "CMS_ttHl_btag_LFStats2Down",
-       "CMS_ttHl_btag_cErr1Up",
-       "CMS_ttHl_btag_cErr1Down",
-       "CMS_ttHl_btag_cErr2Up",
-       "CMS_ttHl_btag_cErr2Down",
-       "CMS_ttHl_JESUp",
-       "CMS_ttHl_JESDown",
-       "CMS_ttHl_tauESUp",
-       "CMS_ttHl_tauESDown"
-};*/
-
-VString shape_systs = {"CMS_ttHl_electronESBarrel",
-    "CMS_ttHl_electronESEndcap"};
-
-VString shape_systs_signal = {"CMS_ttHl_electronER"
-};
+    map<string, Categories> cats;
+    cats["SS_13TeV"] = {
+	    {0,"BB_LL"},{1,"BB_ML"},{2,"BB_MM"},{3,"BB_HL"},{4,"BB_HM"},{5,"BB_HH"},
+      {6,"EE_LL"},{7,"EE_ML"},{8,"EE_MM"},{9,"EE_HL"},{10,"EE_HM"},{11,"EE_HH"},
+      {12,"BE_LL"},{13,"BE_ML"},{14,"EB_ML"},{15,"BE_MM"},{16,"BE_HL"},{17,"EB_HL"},
+      {18,"BE_HM"},{19,"EB_HM"},{20,"BE_HH"},};
+    cats["OS_13TeV"] = {
+	    {0,"BB_LL"},{1,"BB_ML"},{2,"BB_MM"},{3,"BB_HL"},{4,"BB_HM"},{5,"BB_HH"},
+      {6,"EE_LL"},{7,"EE_ML"},{8,"EE_MM"},{9,"EE_HL"},{10,"EE_HM"},{11,"EE_HH"},
+      {12,"BE_LL"},{13,"BE_ML"},{14,"EB_ML"},{15,"BE_MM"},{16,"BE_HL"},{17,"EB_HL"},
+      {18,"BE_HM"},{19,"EB_HM"},{20,"BE_HH"},};
 
 
-cout << ">> Creating processes and observations...\n";
-for (string era : {"13TeV"}) {
-	for (auto chn : chns) {
-		cb.AddObservations(
-				{"*"}, {"htt"}, {era}, {chn}, cats[chn+"_"+era]);
-		cb.AddProcesses(
-				{"*"}, {"htt"}, {era}, {chn}, bkg_procs[chn], cats[chn+"_"+era], false);
-		cb.AddProcesses(
-				{"*"}, {"htt"}, {era}, {chn}, sig_procs[chn], cats[chn+"_"+era], true);
-	}
-}
+    VString shape_systs = {"CMS_ttHl_electronESBarrel",
+        "CMS_ttHl_electronESEndcap"};
 
-//Some of the code for this is in a nested namespace, so
-// we'll make some using declarations first to simplify things a bit.
-using ch::syst::SystMap;
-using ch::syst::era;
-using ch::syst::bin_id;
-using ch::syst::process;
+    VString shape_systs_signal = {"CMS_ttHl_electronER"
+    };
+
+
+    cout << ">> Creating processes and observations...\n";
+    for (string era : {"13TeV"}) {
+	    for (auto chn : chns) {
+		    cb.AddObservations(
+				    {"*"}, {"htt"}, {era}, {chn}, cats[chn+"_"+era]);
+		    cb.AddProcesses(
+				    {"*"}, {"htt"}, {era}, {chn}, bkg_procs[chn], cats[chn+"_"+era], false);
+		    cb.AddProcesses(
+				    {"*"}, {"htt"}, {era}, {chn}, sig_procs[chn], cats[chn+"_"+era], true);
+	    }
+    }
+
+    //Some of the code for this is in a nested namespace, so
+    // we'll make some using declarations first to simplify things a bit.
+    using ch::syst::SystMap;
+    using ch::syst::era;
+    using ch::syst::bin_id;
+    using ch::syst::process;
 
 
   //syst on luminosity
@@ -144,7 +113,7 @@ using ch::syst::process;
 	  .AddSyst(cb, "singletop_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"OS"}).process({"Diboson"})
 	  .AddSyst(cb, "diboson_norm", "lnN", SystMap<>::init(1.5));
-  cb.cp().channel({"OS"}).process({"TTbar"})
+    cb.cp().channel({"OS"}).process({"TTbar"})
 	  .AddSyst(cb, "ttbar_norm", "lnN", SystMap<>::init(1.5));
 	/*cb.cp().channel({"OS"}).process({"QCD"})
 	  .AddSyst(cb, "QCD_norm", "lnN", SystMap<>::init(1.10));
@@ -155,103 +124,31 @@ using ch::syst::process;
   for (auto bin : bins_ss) {
      std::cout << "bin " << bin << std::endl;
      if (bin == "EE_LL"){
-        /*for (auto shape_syst : shape_systs) {
-            cb.cp().channel({"SS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-        }*/
+        //Don't add any signal shape uncertainties in this case (all are empty & the fit doesn't work)
      }
-     /*else if (bin == "BB_HH" || bin == "BB_ML" || bin == "BE_HL" || bin == "BE_HM" || bin == "BE_LL" || bin == "EB_HL" || bin == "EB_HM" || bin == "EB_ML" || bin == "EE_MM"){   //No W+jets
+     else{  //Normal bins do have signal
         for (auto shape_syst : shape_systs) {
             cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-            cb.cp().channel({"SS"}).bin({bin}).process({"DY_fake", "Singletop", "Diboson", "TTbar"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
         }
         for (auto shape_syst_sig : shape_systs_signal) {
             cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-        }
+        }        
      }
-     else if (bin == "BE_HH"){   //No W+jets or singletop
-        for (auto shape_syst : shape_systs) {
-            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-            cb.cp().channel({"SS"}).bin({bin}).process({"DY_fake", "Diboson", "TTbar"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-        }
-        for (auto shape_syst_sig : shape_systs_signal) {
-            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-        }
-     }
-     else if (bin == "EE_ML"){   //No W+jets or ttbar
-        for (auto shape_syst : shape_systs) {
-            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-            cb.cp().channel({"SS"}).bin({bin}).process({"DY_fake", "Singletop", "Diboson"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-        }
-        for (auto shape_syst_sig : shape_systs_signal) {
-            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-        }
-     }
-     else if (bin == "EE_HH"){   //No W+jets or ttbar?
-        for (auto shape_syst : shape_systs) {
-            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-            cb.cp().channel({"SS"}).bin({bin}).process({"DY_fake", "Singletop", "Diboson"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-        }
-        //TODO: cb.cp().channel({"SS"}).bin({bin}).process({"TTbar"}).AddSyst(cb, "CMS_ttHl_electronESEndcap, "shape", SystMap<>::init(1.00));
-        for (auto shape_syst_sig : shape_systs_signal) {
-            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-        }
-     }
-     else if (bin == "BB_LL"){   //No various stuff
-        for (auto shape_syst : shape_systs) {
-            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-            cb.cp().channel({"SS"}).bin({bin}).process({"DY_fake", "Diboson"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-        }
-        //TODO: cb.cp().channel({"SS"}).bin({bin}).process({"Singletop"}).AddSyst(cb, "CMS_ttHl_electronESBarrel", "shape", SystMap<>::init(1.00));
-        for (auto shape_syst_sig : shape_systs_signal) {
-            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-        }
-     }*/
-     
-     else{  //Normal bins
-        for (auto shape_syst : shape_systs) {
-            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-            cb.cp().channel({"SS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-        }
-        for (auto shape_syst_sig : shape_systs_signal) {
-            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-        }
-        
-     }
+     //Backgrounds for all
+     for (auto shape_syst : shape_systs) {
+        cb.cp().channel({"SS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+     }        
   }
-
   
   auto bins_os = cb.cp().channel({"OS"}).bin_set();
   for (auto bin : bins_os) {
-     std::cout << "os bin " << bin << std::endl;
-     /*if (bin == "EE_LL"){
-        /*cb.cp().process({"ZEE"}).bin({bin}).AddSyst(
-           cb, "CMS_htt_$CHANNEL_z$CHANNELShape_" + clip + "_mass" + i + "_$ERA",
-           "shape", SystMap<>::init(1.0));*/
-           ; 
-     //}*/
-     /*if (bin == "EE_LL" || bin == "EE_ML" || bin == "EE_MM" || bin == "BB_LL" || bin == "BB_HH" || 
-            bin == "BE_HH" || bin == "BE_HL" || bin == "BE_HM" || bin == "BE_ML" || 
-            bin == "EB_HM" || bin == "EE_HH" || bin == "EE_HL" || bin == "EE_HM"){   //No W+jets*/
-     if(false){
-        for (auto shape_syst : shape_systs) {
-            cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-            cb.cp().channel({"OS"}).bin({bin}).process({"DY_fake", "Singletop", "Diboson", "TTbar"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-        }
-        for (auto shape_syst_sig : shape_systs_signal) {
-            cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-        }
-     }
-     
-     else{  //Normal bins
-        for (auto shape_syst : shape_systs) {
-            cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-            cb.cp().channel({"OS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-        }
-        for (auto shape_syst_sig : shape_systs_signal) {
-            cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-        }
-        
-     }
+    for (auto shape_syst : shape_systs) {
+        cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+        cb.cp().channel({"OS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+    }
+    for (auto shape_syst_sig : shape_systs_signal) {
+        cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+    }
   }
 
 	cout << ">> Extracting histograms from input root files...\n";
@@ -278,9 +175,7 @@ using ch::syst::process;
 	// the form: {analysis}_{channel}_{bin_id}_{era}
 	// which is commonly used in the htt analyses
 	ch::SetStandardBinNames(cb);
-	//! [part8]
-
-	//! [part9]
+	
 	// First we generate a set of bin names:
 	set<string> bins = cb.bin_set();
 	// This method will produce a set of unique bin names by considering all
