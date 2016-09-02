@@ -18,7 +18,7 @@ int main() {
 	//! [part1]
 	// First define the location of the "auxiliaries" directory where we can
 	// source the input files containing the datacard shapes
-	string aux_shapes = "/home/andres/tth/histosCF_data_eleESER/histograms/";
+	string aux_shapes = "/home/andres/tth/histograms/histosCF_data_eleESER2/datacards";
 
 	// Create an empty CombineHarvester instance that will hold all of the
 	// datacard configuration and histograms etc.
@@ -150,25 +150,118 @@ using ch::syst::process;
 	  .AddSyst(cb, "QCD_norm", "lnN", SystMap<>::init(1.10));
 	*/
 
+
+  auto bins_ss = cb.cp().channel({"SS"}).bin_set();
+  for (auto bin : bins_ss) {
+     std::cout << "bin " << bin << std::endl;
+     if (bin == "EE_LL"){
+        /*for (auto shape_syst : shape_systs) {
+            cb.cp().channel({"SS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+        }*/
+     }
+     /*else if (bin == "BB_HH" || bin == "BB_ML" || bin == "BE_HL" || bin == "BE_HM" || bin == "BE_LL" || bin == "EB_HL" || bin == "EB_HM" || bin == "EB_ML" || bin == "EE_MM"){   //No W+jets
+        for (auto shape_syst : shape_systs) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+            cb.cp().channel({"SS"}).bin({bin}).process({"DY_fake", "Singletop", "Diboson", "TTbar"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+        }
+        for (auto shape_syst_sig : shape_systs_signal) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+        }
+     }
+     else if (bin == "BE_HH"){   //No W+jets or singletop
+        for (auto shape_syst : shape_systs) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+            cb.cp().channel({"SS"}).bin({bin}).process({"DY_fake", "Diboson", "TTbar"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+        }
+        for (auto shape_syst_sig : shape_systs_signal) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+        }
+     }
+     else if (bin == "EE_ML"){   //No W+jets or ttbar
+        for (auto shape_syst : shape_systs) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+            cb.cp().channel({"SS"}).bin({bin}).process({"DY_fake", "Singletop", "Diboson"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+        }
+        for (auto shape_syst_sig : shape_systs_signal) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+        }
+     }
+     else if (bin == "EE_HH"){   //No W+jets or ttbar?
+        for (auto shape_syst : shape_systs) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+            cb.cp().channel({"SS"}).bin({bin}).process({"DY_fake", "Singletop", "Diboson"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+        }
+        //TODO: cb.cp().channel({"SS"}).bin({bin}).process({"TTbar"}).AddSyst(cb, "CMS_ttHl_electronESEndcap, "shape", SystMap<>::init(1.00));
+        for (auto shape_syst_sig : shape_systs_signal) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+        }
+     }
+     else if (bin == "BB_LL"){   //No various stuff
+        for (auto shape_syst : shape_systs) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+            cb.cp().channel({"SS"}).bin({bin}).process({"DY_fake", "Diboson"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+        }
+        //TODO: cb.cp().channel({"SS"}).bin({bin}).process({"Singletop"}).AddSyst(cb, "CMS_ttHl_electronESBarrel", "shape", SystMap<>::init(1.00));
+        for (auto shape_syst_sig : shape_systs_signal) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+        }
+     }*/
+     
+     else{  //Normal bins
+        for (auto shape_syst : shape_systs) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+            cb.cp().channel({"SS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+        }
+        for (auto shape_syst_sig : shape_systs_signal) {
+            cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+        }
+        
+     }
+  }
+
   
-  for (auto chn : chns) {
-	  for (auto shape_syst : shape_systs) {
-      cb.cp().channel({chn}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-      cb.cp().channel({chn}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-    }
-    for (auto shape_syst_sig : shape_systs_signal) {
-      cb.cp().channel({chn}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-    }
+  auto bins_os = cb.cp().channel({"OS"}).bin_set();
+  for (auto bin : bins_os) {
+     std::cout << "os bin " << bin << std::endl;
+     /*if (bin == "EE_LL"){
+        /*cb.cp().process({"ZEE"}).bin({bin}).AddSyst(
+           cb, "CMS_htt_$CHANNEL_z$CHANNELShape_" + clip + "_mass" + i + "_$ERA",
+           "shape", SystMap<>::init(1.0));*/
+           ; 
+     //}*/
+     /*if (bin == "EE_LL" || bin == "EE_ML" || bin == "EE_MM" || bin == "BB_LL" || bin == "BB_HH" || 
+            bin == "BE_HH" || bin == "BE_HL" || bin == "BE_HM" || bin == "BE_ML" || 
+            bin == "EB_HM" || bin == "EE_HH" || bin == "EE_HL" || bin == "EE_HM"){   //No W+jets*/
+     if(false){
+        for (auto shape_syst : shape_systs) {
+            cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+            cb.cp().channel({"OS"}).bin({bin}).process({"DY_fake", "Singletop", "Diboson", "TTbar"}).AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+        }
+        for (auto shape_syst_sig : shape_systs_signal) {
+            cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+        }
+     }
+     
+     else{  //Normal bins
+        for (auto shape_syst : shape_systs) {
+            cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+            cb.cp().channel({"OS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+        }
+        for (auto shape_syst_sig : shape_systs_signal) {
+            cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+        }
+        
+     }
   }
 
 	cout << ">> Extracting histograms from input root files...\n";
 	for (string era : {"13TeV"}) {
 		for (string chn : chns) {
-			string file = aux_shapes+ "/histograms_harvested_stage2_charge_flip.root";
+			string file = aux_shapes+ "/prepareDatacards_data_charge_flip_mass_ll.root";
 			cb.cp().channel({chn}).backgrounds().ExtractShapes(
-					file, chn+"/$BIN/$PROCESS", chn+"/$BIN/$PROCESS_$SYSTEMATIC");
+					file, "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS", "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS_$SYSTEMATIC");
 			cb.cp().channel({chn}).signals().ExtractShapes(
-					file, chn +"/$BIN/$PROCESS", chn+"/$BIN/$PROCESS_$SYSTEMATIC");
+					file, "ttH_charge_flip_" + chn +"_$BIN/x_$PROCESS", "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS_$SYSTEMATIC");
 		}
 	}
 
@@ -196,7 +289,7 @@ using ch::syst::process;
 
 
 	for (string chn : chns) {
-                string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_data_eleESER/cards/"+chn+"cards/").c_str();
+                string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_data_eleESER2/cards/"+chn+"cards/").c_str();
                 boost::filesystem::create_directories(folder);
                 boost::filesystem::create_directories(folder + "/common");
 		TFile output((folder + "/common/htt_" + chn + ".input.root").c_str(),
