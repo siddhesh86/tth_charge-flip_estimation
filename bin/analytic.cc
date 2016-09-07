@@ -53,10 +53,12 @@ typedef vector<string> VString;
 
 
 float getErr(float m1, float m2, float e1, float e2) {
-
-  float e=pow(e1/m1,2)+pow(e2/m2,2);
+  /*float e=pow(e1/m1,2)+pow(e2/m2,2);
   if(m1==0) return 1;
-  return (m1/m2)*sqrt(e);
+  return (m1/m2)*sqrt(e);*/
+  float e=pow(e1/m1,2)+pow((e1+e2)/(m1+m2),2);
+  if(m1==0) return 1;
+  return (m1/(m1+m2))*sqrt(e);
 }
 
 RooNumConvPdf* shapeZ(string tag, RooRealVar* x) {
@@ -243,7 +245,7 @@ map<string, vector<float> > doFits(string tag, string file, bool isData, string 
         else
             vals_os[ cat ] = vs;
     }
-    double ratio = vals_ss[cat][0] / vals_os[cat][0];
+    double ratio = vals_ss[cat][0] / (vals_ss[cat][0] + vals_os[cat][0]);
     std::cout << vals_ss[cat][1] << " " << vals_ss[cat][0] << " " << vals_ss[cat][1] / vals_ss[cat][0];
     double error = getErr(vals_ss[cat][0], vals_os[cat][0], vals_ss[cat][1], vals_os[cat][1]);
     myfile << i << ", " << ratio << ", " << error << ", " << error << "\n";
