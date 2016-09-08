@@ -40,6 +40,8 @@
 #include <RooBreitWigner.h>
 #include <RooCBShape.h>
 #include <RooExponential.h>
+#include "RooCMSShape.h"
+
 
 #include <Math/Functor.h>
 #include <Fit/Fitter.h>
@@ -56,6 +58,7 @@ float getErr(float m1, float m2, float e1, float e2) {
   /*float e=pow(e1/m1,2)+pow(e2/m2,2);
   if(m1==0) return 1;
   return (m1/m2)*sqrt(e);*/
+  cout << "error " << m1 << " " << m2 << " " << e1 << " " << e2 << endl;
   float e=pow(e1/m1,2)+pow((e1+e2)/(m1+m2),2);
   if(m1==0) return 1;
   return (m1/(m1+m2))*sqrt(e);
@@ -94,8 +97,14 @@ RooAbsPdf* shapeSB(string tag, RooRealVar* x, RooRealVar* nSig, RooRealVar* nBkg
 
   RooNumConvPdf* bw = shapeZ(tag, x);
 
-  RooRealVar* exp_tau=new RooRealVar( ("expt_"+tag).c_str(), "tau", -0.05, -40., -0.04);
-  RooExponential* exp_pdf=new RooExponential( ("exp_pdf_"+tag).c_str(), "bkg shape", *x, *exp_tau );
+  //RooRealVar* exp_tau=new RooRealVar( ("expt_"+tag).c_str(), "tau", -0.05, -40., -0.04);
+  //RooExponential* exp_pdf=new RooExponential( ("exp_pdf_"+tag).c_str(), "bkg shape", *x, *exp_tau );
+  RooRealVar* exp_alpha = new RooRealVar( ("expa_"+tag).c_str(), "alpha", 40.0, 20.0, 160.0);
+  RooRealVar* exp_beta  = new RooRealVar( ("expb_"+tag).c_str(), "beta",  0.05, 0.0, 2.0);
+  RooRealVar* exp_gamma = new RooRealVar( ("expg_"+tag).c_str(), "gamma", 0.02, 0.0, 0.1);
+  RooRealVar* exp_peak  = new RooRealVar( ("expp_"+tag).c_str(), "peak",  91.2);
+  RooCMSShape* exp_pdf = new RooCMSShape( ("exp_pdf_"+tag).c_str(), string("bkg shape").c_str(),
+                                            *x, *exp_alpha, *exp_beta, *exp_gamma, *exp_peak);
 
   //RooRealVar* n_Z=new RooRealVar( ("N_{sig} "+tag).c_str(),"n Z events",501.0, 500., 10000000.);
   // RooRealVar* n_bkg=new RooRealVar( ("N_{bkg} "+tag).c_str(),"n bkg events", 3., 0., 600000.);
@@ -121,14 +130,14 @@ vector<float> doSingleFit(TH1* histo, bool isData, string category, string chann
 
   vector<float> v(4,0);
 
-  if(data.sumEntries() < 0.001 || data.numEntries() <10 ) {
+  /*if(data.sumEntries() < 0.001 || data.numEntries() <10 ) {
     v[0]=histo->Integral(histo->GetXaxis()->FindBin(70), histo->GetXaxis()->FindBin(110) );
     v[1]=sqrt( v[0] ); //not true for MC
     v[2]=histo->Integral()-v[0];
     v[3]=sqrt( v[2] );
     cout<<"result:\t"<<histo->GetName()<<"\t"<<v[0]<<"\t"<<v[1]<<endl;
     return v;
-  }
+  }*/
 
   RooRealVar nSig("nSig","nSig",data.sumEntries(),0,10000000);
   RooRealVar nBkg("nBkg","nBkg",1.,0,10000000);
@@ -140,7 +149,7 @@ vector<float> doSingleFit(TH1* histo, bool isData, string category, string chann
   RooAbsPdf* shape=shapeSB( ("s"+category+channel),&mass, &nSig, &nBkg);
 
   RooFitResult* result;
-  result = shape->fitTo(data, RooFit::SumW2Error(kFALSE), RooFit::Save(kTRUE), RooFit::PrintLevel(-1) );
+  result = shape->fitTo(data, RooFit::SumW2Error(kTRUE), RooFit::Save(kTRUE), RooFit::PrintLevel(4) );
   
   double N=nSig.getVal();
   double eN=nSig.getError();
@@ -211,19 +220,14 @@ map<string, vector<float> > doFits(string tag, string file, bool isData, string 
   string datatag = "data";
   if(!isData)
     datatag = "pseudodata";
-  string mydir = Form("output_%s_%s", datatag.data(), tag.data());
+  string mydir = Form("fit_output_%s_%s", datatag.data(), tag.data());
   FILE *test=fopen( mydir.data(), "r" );
   if( test==0 ) system( Form("mkdir %s", mydir.data()));
   else fclose( test );
-  string myFitDir = Form("fit_%s", mydir.data());
-  FILE *test2=fopen( myFitDir.data(), "r" );
-  if( test2==0 ) system( Form("mkdir %s", myFitDir.data()));
-  else fclose( test2 );
-  
   
   ofstream myfile;
   myfile.open(Form("%s/results_cat_shapes.txt", mydir.data()));
-  for (int i=0; i<1; i++) {
+  for (int i=7; i<8; i++) {
     string cat = cats[i];
 	for (auto channel : chns) {
 	    std::cout << Form("ttH_charge_flip_%s_%s", cat.data(), channel.data()) << std::endl;
@@ -234,7 +238,7 @@ map<string, vector<float> > doFits(string tag, string file, bool isData, string 
         string name=Form("%s_%s", channel.data(), cat.data());
 
         //if(singleCateg!="" && name.find(singleCateg)==string::npos) continue;
-        string plotDir = Form("%s/bin%d", myFitDir.data(), i);
+        string plotDir = Form("%s/bin%d", mydir.data(), i);
         FILE *plottest=fopen( plotDir.data(), "r" );
         if( plottest==0 ) system( Form("mkdir %s", plotDir.data()));
         else fclose( plottest );
@@ -246,7 +250,7 @@ map<string, vector<float> > doFits(string tag, string file, bool isData, string 
             vals_os[ cat ] = vs;
     }
     double ratio = vals_ss[cat][0] / (vals_ss[cat][0] + vals_os[cat][0]);
-    std::cout << vals_ss[cat][1] << " " << vals_ss[cat][0] << " " << vals_ss[cat][1] / vals_ss[cat][0];
+    std::cout << vals_ss[cat][1] << " " << vals_ss[cat][0] << " " << vals_ss[cat][1] / vals_ss[cat][0] << endl;;
     double error = getErr(vals_ss[cat][0], vals_os[cat][0], vals_ss[cat][1], vals_os[cat][1]);
     myfile << i << ", " << ratio << ", " << error << ", " << error << "\n";
     
