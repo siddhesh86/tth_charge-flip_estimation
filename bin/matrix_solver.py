@@ -1,10 +1,11 @@
 import numpy as np
 import math
-from plot_pulls import bin_names_composite, bin_names_single, readMisIdRatios, readCategoryRatios
+from plot_pulls import bin_names_composite, bin_names_single, readMisIdRatios
+from utils import read_category_ratios, bin_names_to_numbers
 
 
-def make_coefficient_matrix():
-  return np.array([[ 2,  0,  0,  0,  0,  0,],
+def make_coefficient_matrix(exclude_bins=[]):
+ coeffs = [[ 2,  0,  0,  0,  0,  0,],
  [ 1,  1,  0,  0,  0,  0],
  [ 0,  2,  0,  0,  0,  0],
  [ 1,  0,  1,  0,  0,  0],
@@ -24,7 +25,12 @@ def make_coefficient_matrix():
  [ 1,  0,  0,  0,  0,  1],
  [ 0,  0,  1,  0,  1,  0],
  [ 0,  1,  0,  0,  0,  1],
- [ 0,  0,  1,  0,  0,  1]])
+ [ 0,  0,  1,  0,  0,  1]]
+ used_coeffs = []
+ for i in range(len(coeffs)):
+   if not i in exclude_bins:
+     used_coeffs.append(coeffs[i]) 
+ return np.array(used_coeffs)
 
 def gen_level_probs():
   return [(0.000035157, 0.000033635), (0.000221524, 0.000014054), (0.000267707, 0.000035297), (0.000829932, 0.000155612), (0.001864478, 0.000074103), (0.002657734, 0.000203647)]
@@ -97,7 +103,7 @@ def calculate_uncertainties(M, deltab):
   uncs = [] 
   for i in range(6):    
     uncs.append(0)
-    for k in range(21):
+    for k in range(len(M)):
       uncs[i] += (M[i, k] * deltab[k])**2
     uncs[i] = math.sqrt(uncs[i])
   return np.array(uncs)
@@ -106,8 +112,8 @@ def print_solution_with_uncertainties(x, uncs):
   for i in range(len(x)):
     print x[i]*100, "+-", uncs[i]*100
 
-def calculate(catRatios, weighted = True):
-  A = make_coefficient_matrix()
+def calculate(catRatios, exclude_bins = [], weighted = True):
+  A = make_coefficient_matrix(exclude_bins)
   (b, W) = make_category_matrix(catRatios, weighted)
   w = np.diag(1/W)
   Aw = np.dot(w, A)  
@@ -119,16 +125,20 @@ def calculate(catRatios, weighted = True):
   print_solution_with_uncertainties(rates.tolist(), uncs.tolist())
 
 if __name__ == "__main__":
-  for file_cats in ["fit_output_pseudodata_newDY_mva_0_6_notrig/results_cat.txt", "fit_output_data_newDY_mva_0_6_notrig/results_cat.txt",
-  "fit_output_pseudodata_eleESER2/results_cat.txt", "fit_output_data_eleESER2/results_cat.txt",
-  "fit_output_pseudodata_eleESER2/results_cat_shapes.txt", "fit_output_data_eleESER2/results_cat_shapes.txt",
-  "fit_output_pseudodata_eleESER_mva_0_6_notrig/results_cat.txt", "fit_output_data_eleESER_mva_0_6_notrig/results_cat.txt",
-  "fit_output_pseudodata_eleESER_mva_0_6_notrig/results_cat_shapes.txt", "fit_output_data_eleESER_mva_0_6_notrig/results_cat_shapes.txt"]:
-    print file_cats
-    categoryRatios = readCategoryRatios(file_cats)
+  exclude_bin_names = []
+  exclude_bins = bin_names_to_numbers(exclude_bin_names)
+  for file_cats in [#"fit_output_pseudodata_newDY_mva_0_6_notrig/results_cat.txt", "fit_output_data_newDY_mva_0_6_notrig/results_cat.txt",
+  #"fit_output_pseudodata_eleESER2/results_cat.txt", "fit_output_data_eleESER2/results_cat.txt",
+  #"fit_output_pseudodata_eleESER2/results_cat_shapes.txt", "fit_output_data_eleESER2/results_cat_shapes.txt",
+  #"fit_output_pseudodata_eleESER_mva_0_6_notrig/results_cat.txt", 
+  "fit_output_data_eleESER_mva_0_6_notrig/results_cat.txt",
+  #"fit_output_pseudodata_eleESER_mva_0_6_notrig/results_cat_shapes.txt", 
+  "fit_output_data_eleESER_mva_0_6_notrig/results_cat_shapes.txt"]:
+    print file_cats    
+    categoryRatios = read_category_ratios(file_cats, exclude_bins)
     #print categoryRatios  
     #x = solve_matrix(categoryRatios)
     #print_solution(x)
     #print "_"*80
-    calculate(categoryRatios)
+    calculate(categoryRatios, exclude_bins)
     #make_gen_check()

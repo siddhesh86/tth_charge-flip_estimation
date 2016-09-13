@@ -2,14 +2,7 @@ import os
 import errno    
 from ROOT import TFile, TH1D, TCanvas
 import ROOT
-
-
-bin_names_composite = ["BB_LL", "BB_ML", "BB_MM", "BB_HL", "BB_HM", "BB_HH",
-      "EE_LL", "EE_ML", "EE_MM", "EE_HL", "EE_HM", "EE_HH",
-      "BE_LL", "BE_ML", "EB_ML", "BE_MM", "BE_HL", "EB_HL",
-      "BE_HM", "EB_HM", "BE_HH"]
-bin_names_single = ["BL", "BM", "BH", "EL", "EM", "EH"]
-
+from utils import read_category_ratios, bin_names_composite, bin_names_single
 
 def get_bin_nr_composite(cat):
   return bin_names_composite.index(cat)
@@ -30,9 +23,6 @@ def get_all_containers(component):
     if c1 == component or c2 == component: containers.append(c)
   return containers
 
-
-
-
 def readMisIdRatios(file_misId):
   ROOT.gROOT.SetBatch(True)
   f = TFile(file_misId)
@@ -42,18 +32,6 @@ def readMisIdRatios(file_misId):
     for ptBin in range(1, misIdHisto.GetNbinsX()+1):
       ratios.append((misIdHisto.GetBinContent(ptBin, etaBin), misIdHisto.GetBinError(ptBin, etaBin)))
       #print "MisID (%d, %d): %f" % (etaBin, ptBin, ratio*100)
-  return ratios
-
-def readCategoryRatios(file_cats):
-  f = open(file_cats)  
-  bins = []
-  ratios = []
-  for line in f.readlines():
-    spl = line.split(",")
-    if float(spl[2]) > 0:
-      ratios.append((float(spl[1]), float(spl[2])))
-    else:
-      ratios.append((float(spl[1]), 0.01))
   return ratios
     
 def get_other_component(category, composite_category):
