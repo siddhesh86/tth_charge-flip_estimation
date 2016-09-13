@@ -45,9 +45,12 @@ def make_cat_ratios_from_gen():
   print cat_ratios
   return cat_ratios
 
-def make_category_matrix(catRatios):
+def make_category_matrix(catRatios, weighted = True):
   b = np.array(catRatios)
-  return (b[:,0], b[:,1])
+  if weighted:
+    return (b[:,0], b[:,1])
+  else:
+    return (b[:,0], b[:,1]/b[:,1])
 
 def solve_matrix(catRatios):
   A = make_coefficient_matrix()
@@ -91,8 +94,6 @@ def calculate_rates(M, b):
   return np.dot(M, b)
 
 def calculate_uncertainties(M, deltab):
-  print "1", np.square(np.dot(M, deltab))
-  print "2", np.dot(M, deltab)
   uncs = [] 
   for i in range(6):    
     uncs.append(0)
@@ -105,20 +106,25 @@ def print_solution_with_uncertainties(x, uncs):
   for i in range(len(x)):
     print x[i]*100, "+-", uncs[i]*100
 
-def calculate(catRatios):
+def calculate(catRatios, weighted = True):
   A = make_coefficient_matrix()
-  (b, W) = make_category_matrix(catRatios)
-  w = np.sqrt(np.diag(1/W))
+  (b, W) = make_category_matrix(catRatios, weighted)
+  w = np.diag(1/W)
   Aw = np.dot(w, A)  
   M = calculate_M(Aw)
   bw = np.dot(w, b)
   rates = calculate_rates(M, bw)
-  uncs = calculate_uncertainties(M, W)
+  (b, err) = make_category_matrix(catRatios)
+  uncs = calculate_uncertainties(M, np.dot(w,err))
   print_solution_with_uncertainties(rates.tolist(), uncs.tolist())
 
 if __name__ == "__main__":
-  for file_cats in ["fit_output_pseudodata_testnewconf/results_cat.txt"]:
-    #print file_cats
+  for file_cats in ["fit_output_pseudodata_newDY_mva_0_6_notrig/results_cat.txt", "fit_output_data_newDY_mva_0_6_notrig/results_cat.txt",
+  "fit_output_pseudodata_eleESER2/results_cat.txt", "fit_output_data_eleESER2/results_cat.txt",
+  "fit_output_pseudodata_eleESER2/results_cat_shapes.txt", "fit_output_data_eleESER2/results_cat_shapes.txt",
+  "fit_output_pseudodata_eleESER_mva_0_6_notrig/results_cat.txt", "fit_output_data_eleESER_mva_0_6_notrig/results_cat.txt",
+  "fit_output_pseudodata_eleESER_mva_0_6_notrig/results_cat_shapes.txt", "fit_output_data_eleESER_mva_0_6_notrig/results_cat_shapes.txt"]:
+    print file_cats
     categoryRatios = readCategoryRatios(file_cats)
     #print categoryRatios  
     #x = solve_matrix(categoryRatios)
