@@ -55,13 +55,16 @@ using namespace RooFit;
 typedef vector<string> VString;
 
 
-float getErr(float m1, float m2, float e1, float e2) {
+float getErr(float m1, float m2, float e1, float e2, int dataEventsSS) {
   //float e=pow(e1/m1,2)+pow(e2/m2,2);
   //if(m2==0) return 1;
-  //cout << "error " << m1 << " " << m2 << " " << e1 << " " << e2 << " " << endl;
+  cout << "error " << m1 << " " << m2 << " " << e1 << " " << e2 << " " << endl;
   //return (m1/m2)*sqrt(e);
   float e=pow(e1/m1,2)+pow((e1+e2)/(m1+m2),2);
   if(m2==0) return 1;
+  if(m1==0 && e1==0)
+    e1 = max(1, dataEventsSS);
+  //cout << "error " << m1 << " " << m2 << " " << e1 << " " << e2 << " " << sqrt(pow(e1/m2,2)) << " " << endl;
   if(m1==0) return sqrt(pow(e1/m2,2));
   return (m1/(m1+m2))*sqrt(e);
 }
@@ -324,8 +327,10 @@ map<string, vector<float> > doFits(string tag, string file, bool isData, string 
             vals_os[ cat ] = vs;
     }
     double ratio = vals_ss[cat][0] / (vals_ss[cat][0] + vals_os[cat][0]);
-    std::cout << vals_ss[cat][1] << " " << vals_ss[cat][0] << " " << vals_ss[cat][1] / vals_ss[cat][0] << endl;;
-    double error = getErr(vals_ss[cat][0], vals_os[cat][0], vals_ss[cat][1], vals_os[cat][1]);
+    //std::cout << vals_ss[cat][1] << " " << vals_ss[cat][0] << " " << vals_ss[cat][1] / vals_ss[cat][0] << endl;
+    TDirectory* dSS = (TDirectory*)f->Get(Form("ttH_charge_flip_SS_%s", cat.data()));
+    int dataEventsSS = ((TH1*)dSS->Get("x_data_obs"))->Integral();
+    double error = getErr(vals_ss[cat][0], vals_os[cat][0], vals_ss[cat][1], vals_os[cat][1], dataEventsSS);
     myfile << i << ", " << ratio << ", " << error << ", " << error << "\n";
     
   }
