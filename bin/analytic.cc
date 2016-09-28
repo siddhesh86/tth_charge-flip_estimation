@@ -56,13 +56,14 @@ typedef vector<string> VString;
 
 
 float getErr(float m1, float m2, float e1, float e2) {
-  float e=pow(e1/m1,2)+pow(e2/m2,2);
+  //float e=pow(e1/m1,2)+pow(e2/m2,2);
+  //if(m2==0) return 1;
+  //cout << "error " << m1 << " " << m2 << " " << e1 << " " << e2 << " " << endl;
+  //return (m1/m2)*sqrt(e);
+  float e=pow(e1/m1,2)+pow((e1+e2)/(m1+m2),2);
   if(m2==0) return 1;
-  cout << "error " << m1 << " " << m2 << " " << e1 << " " << e2 << " " << endl;
-  return (m1/m2)*sqrt(e);
-  /*float e=pow(e1/m1,2)+pow((e1+e2)/(m1+m2),2);
-  if(m1==0) return 1;
-  return (m1/(m1+m2))*sqrt(e);*/
+  if(m1==0) return sqrt(pow(e1/m2,2));
+  return (m1/(m1+m2))*sqrt(e);
 }
 
 inline bool ends_with(std::string const & value, std::string const & ending)
