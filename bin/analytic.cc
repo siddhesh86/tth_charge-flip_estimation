@@ -207,7 +207,7 @@ vector<float> doSingleFit(TH1* histo, TH1* signalHisto, string category, string 
   RooAbsPdf* shape=shapeSB( ("s"+category+channel),&mass, &nSig, &nBkg, useSignalHisto, signalHisto, dir);
 
   RooFitResult* result;
-  result = shape->fitTo(data, RooFit::SumW2Error(kTRUE), RooFit::Save(kTRUE), RooFit::PrintLevel(4), Minos(true) );
+  result = shape->fitTo(data, RooFit::SumW2Error(kTRUE), RooFit::Save(kTRUE), RooFit::PrintLevel(2), Minos(true) );
   
   double N=nSig.getVal();
   double eN=nSig.getError();
@@ -327,9 +327,17 @@ map<string, vector<float> > doFits(string tag, string file, bool isData, string 
             vals_os[ cat ] = vs;
     }
     double ratio = vals_ss[cat][0] / (vals_ss[cat][0] + vals_os[cat][0]);
+    
     //std::cout << vals_ss[cat][1] << " " << vals_ss[cat][0] << " " << vals_ss[cat][1] / vals_ss[cat][0] << endl;
     TDirectory* dSS = (TDirectory*)f->Get(Form("ttH_charge_flip_SS_%s", cat.data()));
     int dataEventsSS = ((TH1*)dSS->Get("x_data_obs"))->Integral();
+    //TDirectory* dOS = (TDirectory*)f->Get(Form("ttH_charge_flip_OS_%s", cat.data()));
+    //int dataEventsOS = ((TH1*)dOS->Get("x_data_obs"))->Integral();
+    
+    //Hack for both fits zero case:
+    if (vals_ss[cat][0] == 0 && vals_os[cat][0] == 0)
+        ratio = 0.;    
+    
     double error = getErr(vals_ss[cat][0], vals_os[cat][0], vals_ss[cat][1], vals_os[cat][1], dataEventsSS);
     myfile << i << ", " << ratio << ", " << error << ", " << error << "\n";
     
