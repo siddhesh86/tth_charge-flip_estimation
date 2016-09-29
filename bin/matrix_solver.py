@@ -111,6 +111,23 @@ def calculate_uncertainties(M, deltab):
 def print_solution_with_uncertainties(x, uncs):
   for i in range(len(x)):
     print x[i]*100, "+-", uncs[i]*100
+    
+def print_latex_header():
+   print """\\begingroup\setlength{\\fboxsep}{0pt}
+    \colorbox{cyan}{%
+    \\begin{tabular}{llccc}
+	    \hline
+	    ID & & $10\leq\pt<25\GeV$ & $25\leq\pt<50\GeV$ & $50\GeV\leq\pt$ \\\\
+	    \hline	    
+    \end{tabular}%
+}\endgroup"""
+    
+def print_solution_latex(x, uncs):
+  latex = """
+	    \multirow{2}{*}{TYPE}   & $0\leq\eta<1.479$    & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
+	                            & $1.479\leq\eta<2.5$  & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
+	    \hline""" % (x[0]*100, uncs[0]*100, x[1]*100, uncs[1]*100, x[2]*100, uncs[2]*100, x[3]*100, uncs[3]*100, x[4]*100, uncs[4]*100, x[5]*100, uncs[5]*100)
+  print latex  
 
 def calculate(catRatios, exclude_bins = [], weighted = True):
   A = make_coefficient_matrix(exclude_bins)
@@ -122,23 +139,34 @@ def calculate(catRatios, exclude_bins = [], weighted = True):
   rates = calculate_rates(M, bw)
   (b, err) = make_category_matrix(catRatios)
   uncs = calculate_uncertainties(M, np.dot(w,err))
-  print_solution_with_uncertainties(rates.tolist(), uncs.tolist())
+  return (rates.tolist(), uncs.tolist())
+  
 
 if __name__ == "__main__":
-  exclude_bin_names = []
+  exclude_bin_names = [#"BB_LL", "BB_ML", "BB_HL", "BB_HH", "EE_LL", "EE_ML", "EE_HL", "EE_HH", "BE_HL", "BE_HH",
+    #"EE_HM", "BE_HM", "EB_HM",
+    #"BE_LL", "BE_ML", "EB_ML"
+    ]
   exclude_bins = bin_names_to_numbers(exclude_bin_names)
   for file_cats in [#"fit_output_pseudodata_newDY_mva_0_6_notrig/results_cat.txt", "fit_output_data_newDY_mva_0_6_notrig/results_cat.txt",
   #"fit_output_pseudodata_eleESER2/results_cat.txt", "fit_output_data_eleESER2/results_cat.txt",
   #"fit_output_pseudodata_eleESER2/results_cat_shapes.txt", "fit_output_data_eleESER2/results_cat_shapes.txt",
   #"fit_output_pseudodata_eleESER_mva_0_6_notrig/results_cat.txt", 
+  "fit_output_pseudodata_eleESER_mva_0_6_notrig/results_cat.txt",
+  "fit_output_pseudodata_eleESER_mva_0_6_notrig/results_cat_shapes.txt",
+  "fit_output_pseudodata_eleESER_mva_0_6_notrig/results_cat_hybrid.txt",
   "fit_output_data_eleESER_mva_0_6_notrig/results_cat.txt",
-  #"fit_output_pseudodata_eleESER_mva_0_6_notrig/results_cat_shapes.txt", 
-  "fit_output_data_eleESER_mva_0_6_notrig/results_cat_shapes.txt"]:
-    print file_cats    
-    categoryRatios = read_category_ratios(file_cats, exclude_bins)
-    #print categoryRatios  
-    #x = solve_matrix(categoryRatios)
-    #print_solution(x)
-    #print "_"*80
-    calculate(categoryRatios, exclude_bins)
-    #make_gen_check()
+  "fit_output_data_eleESER_mva_0_6_notrig/results_cat_shapes.txt",
+  "fit_output_data_eleESER_mva_0_6_notrig/results_cat_hybrid.txt"]:
+      print file_cats    
+      categoryRatios = read_category_ratios(file_cats, exclude_bins)
+      #print categoryRatios  
+      #x = solve_matrix(categoryRatios)
+      #print_solution(x)
+      #print "_"*80
+      (rates, uncs) = calculate(categoryRatios, exclude_bins)
+      print_solution_with_uncertainties(rates, uncs)
+      #make_gen_check()
+      
+      print_solution_latex(rates, uncs)   
+  print_latex_header()     
