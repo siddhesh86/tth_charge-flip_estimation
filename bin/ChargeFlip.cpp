@@ -470,6 +470,7 @@ int shapes_main(bool do_parametric = true) {
 
 int main() {
     histograms_main();
+    //Shape-based approach not fully implemented
     //return shapes_main();    
 }
 
