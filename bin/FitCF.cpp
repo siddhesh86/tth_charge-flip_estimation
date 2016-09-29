@@ -206,8 +206,13 @@ int main(int argc, char* argv[]) {
 
     Chi2 chi2;
     binSt bins = setBinSizes(file);
-    string which_fit = "pseudodata_testnewconf";
-    read_results("fit_output_"+which_fit+"/results_cat.txt", chi2);
+    
+    bool shapeBased = false;
+    string shapeStr = "";
+    if (shapeBased)
+        shapeStr = "_shapes";
+    string which_fit = "data_eleESER_mva_0_6_notrig";
+    read_results("fit_output_"+which_fit+"/results_cat"+shapeStr+".txt", chi2);
 
 
     // perform the final fit ====================
@@ -248,7 +253,7 @@ int main(int argc, char* argv[]) {
 
     //size_t p = file.find(".root");
 
-    string tag = "fit_output_"+which_fit+"/fit_res";
+    string tag = "fit_output_"+which_fit+"/fit_res"+shapeStr;
     
     string fname = tag+(isData?"_data":"_MC")+".root";
     TFile* f = new TFile(fname.c_str(),"recreate");
