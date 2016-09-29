@@ -5,3 +5,5 @@ latex_output/*.out
 latex_output/*.snm
 latex_output/*.toc
 latex_output/*.pdf
+pull_plots
+plots

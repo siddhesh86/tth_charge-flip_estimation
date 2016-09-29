@@ -1,5 +1,7 @@
 from ROOT import TH2F, TFile
 from array import array
+import errno    
+import os
 
 bin_names_composite = ["BB_LL", "BB_ML", "BB_MM", "BB_HL", "BB_HM", "BB_HH",
       "EE_LL", "EE_ML", "EE_MM", "EE_HL", "EE_HM", "EE_HH",
@@ -9,6 +11,16 @@ bin_names_single = ["BL", "BM", "BH", "EL", "EM", "EH"]
 
 
 
+
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
 def read_category_ratios(file_cats, exclude_bins = []):
   f = open(file_cats)  
