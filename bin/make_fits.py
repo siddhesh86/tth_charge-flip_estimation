@@ -15,7 +15,7 @@ def mkdir_p(path):
             raise
 
 
-datacard_dir = "output_data_eleESER"
+datacard_dir = "output_pseudodata_eleESER2"
 
 
 def read_fit_result(fit_file, postfit_file):
@@ -83,10 +83,7 @@ def combine_cards():
     call("text2workspace.py %s -o %s -P HiggsAnalysis.CombinedLimit.TagAndProbeModel:tagAndProbe" % (this_card, this_ws), shell = True)
     fit_dir = "./fit_%s/bin%d" % (datacard_dir, bin)
     mkdir_p(fit_dir)
-    if "_data_oldDY" in fit_dir and (bin == 9 or bin == 15 or bin == 19):
-      call("combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties --minimizerStrategy=2" % (this_ws, fit_dir), shell = True)      
-    else:
-      call("combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties  --minimizerStrategy=2" % (this_ws, fit_dir), shell = True)
+    call("combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties" % (this_ws, fit_dir), shell = True)
     print "combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties" % (this_ws, fit_dir)
     print "PostFitShapesFromWorkspace -d %s -w %s -o %s/output_postfit.root -f %s/mlfit.root:fit_s --postfit --sampling --print" % ("card_%d.txt" % (bin), this_ws, fit_dir, fit_dir)
     call("PostFitShapesFromWorkspace -d %s -w %s -o %s/output_postfit.root -f %s/mlfit.root:fit_s --postfit --sampling --print" % ("card_%d.txt" % (bin), this_ws, fit_dir, fit_dir), shell=True)
