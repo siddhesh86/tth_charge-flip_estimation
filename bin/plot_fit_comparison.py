@@ -82,8 +82,11 @@ def make_latex(fit1, fit2):
 
 if __name__ == "__main__":
   maindir = "/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/"
-  fit1 = {"indir": maindir+"fit_output_pseudodata_eleESER_mva_0_6_notrig", "type": "hybrid", "title": "Pseudodata hybrid"}
-  fit2 = {"indir": maindir+"fit_output_pseudodata_eleESER_mva_0_6_notrig", "type": "", "title": "Pseudodata histograms"}
-  outfile = "latex_output/pseudodata_hybrid_vs_histos.tex"
+  fit1 = {"indir": maindir+"fit_output_data_eleESER_mva_0_6_notrig", "type": "hybrid", "title": "Data hybrid"}
+  fit2 = {"indir": maindir+"fit_output_data_eleESER_mva_0_6_notrig", "type": "", "title": "Data histograms"}
+  #fit1 = {"indir": maindir+"fit_output_data_eleESER2", "type": "hybrid", "title": "Data hybrid"}
+  #fit2 = {"indir": maindir+"fit_output_data_eleESER2", "type": "", "title": "Data histograms"}
+  #outfile = "latex_output/data_hybrid_vs_histos_withcuts.tex"
+  outfile = "latex_output/data_hybrid_vs_histos.tex"
   f = open(outfile, "w")
   f.write(make_latex(fit1, fit2))
