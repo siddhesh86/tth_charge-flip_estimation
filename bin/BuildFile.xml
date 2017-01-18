@@ -1,8 +1,10 @@
 <bin file="ChargeFlip.cpp" name="ChargeFlipDC"></bin>
+<bin file="ChargeFlipMu.cpp" name="ChargeFlipDCMu"></bin>
 <bin file="createAnalyticShapes.cc" name="CreateAnalyticShapes"></bin>
 <bin file="FitCF.cpp" name="FitCF"></bin>
 <bin file="testws.cc" name="testws"></bin>
 <bin file="analytic.cc" name="AnalyticFit"></bin>
+<bin file="analyticMu.cc" name="AnalyticFitMu"></bin>
 <use name="CombineHarvester/CombineTools"/>
 <use name="root"/>
 <use name="rootmath"/>
