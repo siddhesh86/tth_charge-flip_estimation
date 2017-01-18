@@ -144,7 +144,6 @@ bool MaxLikelihoodFit::runSpecific(RooWorkspace *w, RooStats::ModelConfig *mc_s,
           (*it)->Draw(); 
           c1->Print((out_+"/"+(*it)->GetName()+"_prefit.png").c_str());
           c1->Print((out_+"/"+(*it)->GetName()+"_prefit.pdf").c_str());
-          c1->Print((out_+"/"+(*it)->GetName()+"_prefit.root").c_str());
           if (fitOut.get() && currentToy_< 1) fitOut->WriteTObject(*it, (std::string((*it)->GetName())+"_prefit").c_str());
 
       }
@@ -153,7 +152,6 @@ bool MaxLikelihoodFit::runSpecific(RooWorkspace *w, RooStats::ModelConfig *mc_s,
           (*it)->Draw(); 
           c1log->Print((out_+"/"+(*it)->GetName()+"_log_prefit.png").c_str());
           c1log->Print((out_+"/"+(*it)->GetName()+"_log_prefit.pdf").c_str());
-          c1log->Print((out_+"/"+(*it)->GetName()+"_log_prefit.root").c_str());
       }
   }
 
@@ -316,14 +314,12 @@ bool MaxLikelihoodFit::runSpecific(RooWorkspace *w, RooStats::ModelConfig *mc_s,
               c1->cd(); (*it)->Draw(); 
               c1->Print((out_+"/"+(*it)->GetName()+"_fit_s.png").c_str());
               c1->Print((out_+"/"+(*it)->GetName()+"_fit_s.pdf").c_str());
-              c1->Print((out_+"/"+(*it)->GetName()+"_fit_s.root").c_str());
               if (fitOut.get() && currentToy_< 1) fitOut->WriteTObject(*it, (std::string((*it)->GetName())+"_fit_s").c_str());
           }
           for (std::vector<RooPlot *>::iterator it = plots.begin(), ed = plots.end(); it != ed; ++it) {
               c1log->cd(); (*it)->Draw(); 
               c1log->Print((out_+"/"+(*it)->GetName()+"_log_fit_s.png").c_str());
               c1log->Print((out_+"/"+(*it)->GetName()+"_log_fit_s.pdf").c_str());
-              c1log->Print((out_+"/"+(*it)->GetName()+"_log_fit_s.root").c_str());
           }
       }
 
