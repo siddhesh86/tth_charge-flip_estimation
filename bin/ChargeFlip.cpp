@@ -30,7 +30,7 @@ int histograms_main() {
 	//! [part1]
 	// First define the location of the "auxiliaries" directory where we can
 	// source the input files containing the datacard shapes
-	string aux_shapes = "/home/andres/tth/histograms/histosCF_data_eleESER2/datacards";
+	string aux_shapes = "/home/andres/tth/histograms/histosCF_noTrigCuts_mva_0_6_v2/datacards";
 
 	// Create an empty CombineHarvester instance that will hold all of the
 	// datacard configuration and histograms etc.
@@ -97,7 +97,7 @@ int histograms_main() {
 
   //syst on normalization
   cb.cp().channel({"SS"}).signals()
-	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(1.5));
+	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(2.0));
 	cb.cp().channel({"SS"}).process({"DY_fake"})
 	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"SS"}).process({"WJets"})
@@ -116,7 +116,7 @@ int histograms_main() {
 
   //syst on normalization
 	cb.cp().channel({"OS"}).signals()
-	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(1.5));
+	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(2.0));
 	cb.cp().channel({"OS"}).process({"DY_fake"})
 	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"OS"}).process({"WJets"})
@@ -197,7 +197,7 @@ int histograms_main() {
 
 
     for (string chn : chns) {
-                string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_data_eleESER2/cards/"+chn+"cards/").c_str();
+                string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_data_noTrigCuts_mva_0_6_v2/cards/"+chn+"cards/").c_str();
                 boost::filesystem::create_directories(folder);
                 boost::filesystem::create_directories(folder + "/common");
 	    TFile output((folder + "/common/htt_" + chn + ".input.root").c_str(),
