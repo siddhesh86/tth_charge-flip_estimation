@@ -36,6 +36,10 @@ def read_category_ratios(file_cats, exclude_bins = []):
     else:
       ratios.append((float(spl[1]), 0.01))
   return ratios
+
+  
+def get_bin_name_single(bin_nr_eta, bin_nr_pt):
+  return bin_names_single[(bin_nr_eta - 1) * 3 + (bin_nr_pt - 1)]
   
 def get_bin_name(bin_nr):
   return bin_names_composite[bin_nr]

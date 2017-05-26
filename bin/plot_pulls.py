@@ -67,8 +67,8 @@ def make_pull_plot(category, misIDRatios, catRatios, datastring, fitname, fittyp
 
 if __name__ == "__main__":
   for datastring in ["data", "pseudodata"]:
-    for fitname in ["eleESER_mva_0_6_notrig", "eleESER2"]:
-      for fittype in ["", "shapes", "hybrid"]:
+    for fitname in ["summer_May11_noWJ"]:
+      for fittype in [""]: #, "shapes", "hybrid"]:
         fittypestring = fittype
         if len(fittype) > 0: fittypestring = "_"+fittype
         file_misId = "fit_output_%s_%s/fit_res%s.root" % (datastring, fitname, fittypestring)
