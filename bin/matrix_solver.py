@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from plot_pulls import bin_names_composite, bin_names_single, readMisIdRatios
+from plot_pulls import bin_names_composite, bin_names_single
 from utils import read_category_ratios, bin_names_to_numbers, fit_results_to_file
 
 
@@ -45,10 +45,9 @@ def make_cat_ratios_from_gen():
     #print gen_probs[indices[r][0]]
     val = gen_probs[indices[r][0]][0]+gen_probs[indices[r][1]][0]
     err = math.sqrt(gen_probs[indices[r][0]][1]**2+gen_probs[indices[r][1]][1]**2)
-    #if err == 0: err = 0.01
-    print r, val, err
+    if err == 0: err = 1e-8
+    #print r, val, err
     cat_ratios.append((val, err))
-  print cat_ratios
   return cat_ratios
 
 def make_category_matrix(catRatios, weighted = True):
@@ -62,8 +61,8 @@ def solve_matrix(catRatios):
   A = make_coefficient_matrix()
   #print A
   (b, W) = make_category_matrix(catRatios)
-  print W
-  #print 1/W
+  #print W
+  ##print 1/W
   W = np.sqrt(np.diag(1/W))
   #print W
   Aw = np.dot(W,A)
@@ -122,7 +121,7 @@ def print_latex_header():
     \end{tabular}%
 }\endgroup"""
     
-def print_solution_latex(x, uncs, fittype, datastring):
+def print_solution_latex(x, uncs, datastring):
   latex = """
 	    \multirow{2}{*}{%s}   & $0\leq\eta<1.479$    & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
 	                            & $1.479\leq\eta<2.5$  & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
@@ -132,6 +131,7 @@ def print_solution_latex(x, uncs, fittype, datastring):
 def calculate(catRatios, exclude_bins = [], weighted = True):
   A = make_coefficient_matrix(exclude_bins)
   (b, W) = make_category_matrix(catRatios, weighted)
+  #print W
   w = np.diag(1/W)
   Aw = np.dot(w, A)  
   M = calculate_M(Aw)
@@ -140,30 +140,38 @@ def calculate(catRatios, exclude_bins = [], weighted = True):
   (b, err) = make_category_matrix(catRatios)
   uncs = calculate_uncertainties(M, np.dot(w,err))
   return (rates.tolist(), uncs.tolist())
-  
+
+
+def calculate_solution(categoryRatios, exclude_bins, fitname, fittypestring, datastring):
+  (rates, uncs) = calculate(categoryRatios, exclude_bins)
+  if len(exclude_bins) > 0: fittypestring += "_exclusions"
+  fit_results_to_file(rates, uncs, fittypestring, fitname, datastring)
+  print_solution_latex(rates, uncs, datastring)   
 
 if __name__ == "__main__":
-  exclude_bin_names = [#"BB_LL", "BB_ML", "BB_HL", "BB_HH", "EE_LL", "EE_ML", "EE_HL", "EE_HH", "BE_HL", "BE_HH",
+  exclude_bin_names = [
+    "BB_LL", "BB_ML", "EE_LL", "EE_HH", 
+    "BB_HM", "BE_LL", "EB_ML", "EE_MM"
+
+    #"EE_LL" #"BB_LL", "BB_ML", "BB_HL", "BB_HH", "EE_LL", "EE_ML", "EE_HL", "EE_HH", "BE_HL", "BE_HH",
     #"EE_HM", "BE_HM", "EB_HM",
     #"BE_LL", "BE_ML", "EB_ML"
     ]
   exclude_bins = bin_names_to_numbers(exclude_bin_names)
-  for datastring in ["data", "pseudodata"]:
-    for fitname in ["eleESER_mva_0_6_notrig", "eleESER2"]:
-      for fittype in ["", "shapes", "hybrid"]:
+  for datastring in ["pseudodata", "data"]:
+    for fitname in ["summer_May10"]:
+      for fittype in [""]: #[""]:# ["hybrid", "shapes"]:
         fittypestring = fittype
+        print datastring, fitname, fittype
         if len(fittype) > 0: fittypestring = "_"+fittype
         file_cats = "fit_output_%s_%s/results_cat%s.txt" % (datastring, fitname, fittypestring)
-        print file_cats    
+        #print file_cats    
         categoryRatios = read_category_ratios(file_cats, exclude_bins)
+        calculate_solution(categoryRatios, exclude_bins, fitname, fittypesring, datastring)
         #print categoryRatios  
         #x = solve_matrix(categoryRatios)
         #print_solution(x)
         #print "_"*80
-        (rates, uncs) = calculate(categoryRatios, exclude_bins)
         #print_solution_with_uncertainties(rates, uncs)
         #make_gen_check()
-        fit_results_to_file(rates, uncs, fittypestring, fitname, datastring)
-      
-        print_solution_latex(rates, uncs, fittype, datastring)   
   print_latex_header()     

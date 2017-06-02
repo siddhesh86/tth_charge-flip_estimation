@@ -22,17 +22,6 @@ def get_all_containers(component):
     (c1, c2) = contained_in(c)
     if c1 == component or c2 == component: containers.append(c)
   return containers
-
-def readMisIdRatios(file_misId):
-  ROOT.gROOT.SetBatch(True)
-  f = TFile(file_misId)
-  misIdHisto = f.Get("chargeMisId")
-  ratios = []
-  for etaBin in range(1, misIdHisto.GetNbinsY()+1):
-    for ptBin in range(1, misIdHisto.GetNbinsX()+1):
-      ratios.append((misIdHisto.GetBinContent(ptBin, etaBin), misIdHisto.GetBinError(ptBin, etaBin)))
-      #print "MisID (%d, %d): %f" % (etaBin, ptBin, ratio*100)
-  return ratios
     
 def get_other_component(category, composite_category):
   comps = contained_in(composite_category)
