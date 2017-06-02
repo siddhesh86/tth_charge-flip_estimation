@@ -165,6 +165,16 @@ def make_pull_plot_21(misIDRatios, catRatios, name = "gen", mydir = "pull_plots_
   sum_plot.SetLineWidth(2)
   gen_plot.Draw("e1")
   sum_plot.Draw("e1 same")
+
+  leg = ROOT.TLegend(0.5,0.75,0.9,0.85)
+  leg.SetBorderSize(0)
+  leg.SetLineStyle(0)
+  leg.SetTextSize(0.04)
+  leg.SetFillColor(0)
+  leg.AddEntry(sum_plot,"Sum of component categories","l")
+  leg.AddEntry(gen_plot,"Category for 2 electrons","l")
+  leg.Draw()
+
   mkdir_p(mydir)
   c.SaveAs("%s/pulls_%s.pdf" % (mydir, name))
   c.SaveAs("%s/pulls_%s.png" % (mydir, name))
