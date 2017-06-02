@@ -126,7 +126,15 @@ def print_solution_latex(x, uncs, datastring):
 	    \multirow{2}{*}{%s}   & $0\leq\eta<1.479$    & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
 	                            & $1.479\leq\eta<2.5$  & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
 	    \hline""" % (datastring, x[0]*100, uncs[0]*100, x[1]*100, uncs[1]*100, x[2]*100, uncs[2]*100, x[3]*100, uncs[3]*100, x[4]*100, uncs[4]*100, x[5]*100, uncs[5]*100)
-  print latex  
+  print latex
+
+def print_ratios_latex(ratios, datastring):
+  latex = """
+	    \multirow{2}{*}{%s}   & $0\leq\eta<1.479$    & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
+	                            & $1.479\leq\eta<2.5$  & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
+	    \hline""" % (datastring, ratios[0][0]*100, ratios[0][1]*100, ratios[1][0]*100, ratios[1][1]*100, ratios[2][0]*100, ratios[2][1]*100, ratios[3][0]*100, ratios[3][1]*100, ratios[4][0]*100, ratios[4][1]*100, ratios[5][0]*100, ratios[5][1]*100)
+  print latex
+
 
 def calculate(catRatios, exclude_bins = [], weighted = True):
   A = make_coefficient_matrix(exclude_bins)
@@ -144,7 +152,6 @@ def calculate(catRatios, exclude_bins = [], weighted = True):
 
 def calculate_solution(categoryRatios, exclude_bins, fitname, fittypestring, datastring):
   (rates, uncs) = calculate(categoryRatios, exclude_bins)
-  if len(exclude_bins) > 0: fittypestring += "_exclusions"
   fit_results_to_file(rates, uncs, fittypestring, fitname, datastring)
   print_solution_latex(rates, uncs, datastring)   
 

@@ -14,6 +14,7 @@ def get_bin_nr_single(cat):
 
 def readMisIDRatiosGen(infile, processes = ["DY"]):
   ratios = {}
+  ratios_num = []
   f = TFile(infile)
   for p in processes:
     effs = f.Get("gen_ratio/pt_eta_%s" % p)
@@ -26,8 +27,9 @@ def readMisIDRatiosGen(infile, processes = ["DY"]):
         effErrLo = effs.GetEfficiencyErrorLow(bin)
         effErrHi = effs.GetEfficiencyErrorUp(bin)
         ratios[get_bin_name_single(bin_eta, bin_pt)] = (eff, effErrLo, effErrHi)
+        ratios_num.append((eff, max(effErrLo, effErrHi)))
         #print "Bin (%d, %d): Eff = %f + %f - %f" % (bin_eta, bin_pt, eff * 100, effErrHi * 100, effErrLo*100)
-  return ratios
+  return (ratios_num,ratios)
 
 def readCategoryRatiosGen(infile, exclude_bins = []):
   f = TFile(infile) 

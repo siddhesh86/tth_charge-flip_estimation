@@ -6,7 +6,7 @@ from utils import read_category_ratios, readMisIDRatios, bin_names_composite, bi
 #, bin_names_single, mkdir_p, get_bin_name_single, get_bin_name, 
 #from plot_pulls import 
 from plot_pulls_gen import readMisIDRatiosGen, readCategoryRatiosGen, make_pull_plot_21
-from matrix_solver import calculate_solution
+from matrix_solver import calculate_solution, print_ratios_latex
 
 NSIGMAS = 1.2815515 #Corresponds to p-value of 0.1
 EXCLUDED_FILE = "../data/excluded_categories.txt"
@@ -31,9 +31,11 @@ if __name__ == "__main__":
   infile = "/hdfs/local/ttH_2tau/andres/ttHAnalysis/2016/histosCF_summer_May30/histograms/charge_flip/histograms_harvested_stage2_charge_flip_Tight.root"  
   FITNAME = "summer_May30"
         
-  misIDRatios = readMisIDRatiosGen(infile)
+  (misIDRatiosNum, misIDRatios) = readMisIDRatiosGen(infile)
   catRatiosNum, catRatios = readCategoryRatiosGen(infile)
-  chi2s = make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", y_range = (-0.002, 0.012))
+  print_ratios_latex(misIDRatiosNum, "gen")   
+
+  chi2s = make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", y_range = (-0.001, 0.011))
   select_categories(chi2s)
   for exclude in [False, True]:
     fittypestring = "_gen"
@@ -52,7 +54,7 @@ if __name__ == "__main__":
     calculate_solution(catRatiosNum, exclude_bins_num, FITNAME, fittypestring, "pseudodata")
     print file_misId, fittypestring, exclude
     misIDRatios = readMisIDRatios(file_misId)
-    make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", name = name, y_range = (-0.002, 0.012), excluded = exclude_bins)
+    make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", name = name, y_range = (-0.001, 0.011), excluded = exclude_bins)
 
   FITTYPE = "" #can use also "shapes" or "hybrid" here
   for datastring in ["pseudodata", "data"]:
@@ -71,7 +73,7 @@ if __name__ == "__main__":
       calculate_solution(catRatiosNum, exclude_bins_num, FITNAME, fittypestring, datastring)
       misIDRatios = readMisIDRatios(file_misId)
       
-      make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", name = name, y_range = (-0.002, 0.012), excluded = exclude_bins)
+      make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", name = name, y_range = (-0.001, 0.011), excluded = exclude_bins)
       #print misIDRatios
       #print "___________"
       #print catRatios
