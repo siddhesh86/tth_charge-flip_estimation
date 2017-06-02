@@ -4,6 +4,7 @@ from ROOT import TFile, TH1D, TCanvas
 import ROOT
 from utils import read_category_ratios, bin_names_composite, bin_names_composite_nice, bin_names_single, mkdir_p, get_bin_name_single, get_bin_name, get_bin_name_nice, get_component_cats, make_title
 from plot_pulls import contained_in, get_other_component, get_all_containers
+import math
 
 def get_bin_nr_composite(cat):
   return bin_names_composite.index(cat)
@@ -46,7 +47,7 @@ def readCategoryRatiosGen(infile, exclude_bins = []):
     else: 
       ratio = 1.
       err = 1.
-    if err == 0. : err = 1e-8
+    if err == 0. : err = -math.log(0.32) / os_count
     #print "%d, %f, %f, %f" % (i, ratio, err, err)
     #print get_bin_name_nice(i), get_bin_name_nice(i) in exclude_bins
     if get_bin_name_nice(i) in exclude_bins: 

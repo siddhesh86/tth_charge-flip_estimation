@@ -3,5 +3,4 @@ EM_EM
 EH_EH
 EM_BL
 BL_EL
-EL_EL
 BH_BM
