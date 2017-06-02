@@ -80,6 +80,25 @@ def bin_names_to_numbers(bin_names):
 
 def get_bin_nr(bin_name_nice):
   return bin_names_composite_nice.index(bin_name_nice)
+
+
+def make_title(name, excluded):
+  title = ""  
+  if name == "gen":
+    title = "Generator-level"
+  elif name == "gen_fit":
+    title = "Generator-level, misID rates from solving equations"
+  elif name == "gen_fit_exclusions":
+    title = "Generator-level, misID rates from solving equations, some categories excluded"
+  elif name == "pseudodata":
+    title = "Pseudodata"
+  elif name == "pseudodata_exclusions":
+    title = "Pseudodata, some categories excluded"
+  elif name == "Data":
+    title = "Pseudodata"
+  elif name == "Data_exclusions":
+    title = "Pseudodata, some categories excluded"
+  return title
   
 
 def fit_results_to_file(rates, uncs, fittype, fitname, datastring):

@@ -2,7 +2,7 @@ import os
 import errno    
 from ROOT import TFile, TH1D, TCanvas
 import ROOT
-from utils import read_category_ratios, bin_names_composite, bin_names_composite_nice, bin_names_single, mkdir_p, get_bin_name_single, get_bin_name, get_bin_name_nice, get_component_cats
+from utils import read_category_ratios, bin_names_composite, bin_names_composite_nice, bin_names_single, mkdir_p, get_bin_name_single, get_bin_name, get_bin_name_nice, get_component_cats, make_title
 from plot_pulls import contained_in, get_other_component, get_all_containers
 
 def get_bin_nr_composite(cat):
@@ -159,10 +159,12 @@ def make_pull_plot_21(misIDRatios, catRatios, name = "gen", mydir = "pull_plots_
   #others_plot.SetAxisRange(-0.006, 0.006,"Y")
   #others_plot.GetXaxis().SetBinLabel(b,bin_names[b-1])
   #true_plot.GetXaxis().SetBinLabel(b,bin_names[b-1])
-    
+  
   gen_plot.SetLineColor(ROOT.kRed)
   gen_plot.SetLineWidth(2)
   sum_plot.SetLineWidth(2)
+  title = make_title(name, excluded)
+  gen_plot.SetNameTitle(title, title)  
   gen_plot.Draw("e1")
   sum_plot.Draw("e1 same")
 
