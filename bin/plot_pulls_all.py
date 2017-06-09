@@ -2,10 +2,10 @@ import os
 import errno    
 from ROOT import TFile, TH1D, TCanvas
 import ROOT
-from utils import read_category_ratios, readMisIDRatios, bin_names_composite, bin_names_composite_nice, read_exclude_bins
-#, bin_names_single, mkdir_p, get_bin_name_single, get_bin_name, 
+from utils import read_category_ratios, readMisIDRatios, bin_names_composite, bin_names_composite_nice, read_exclude_bins, bin_names_single
+#, mkdir_p, get_bin_name_single, get_bin_name, 
 #from plot_pulls import 
-from plot_pulls_gen import readMisIDRatiosGen, readCategoryRatiosGen, make_pull_plot_21
+from plot_pulls_gen import readMisIDRatiosGen, readCategoryRatiosGen, make_pull_plot_21, makeCatRatiosFrom6
 from matrix_solver import calculate_solution, print_ratios_latex
 
 NSIGMAS = 1.2815515 #Corresponds to p-value of 0.1
@@ -28,26 +28,47 @@ def select_categories(chi2s):
 
 if __name__ == "__main__":
   ROOT.gROOT.SetBatch(True)
-  infile = "/hdfs/local/ttH_2tau/andres/ttHAnalysis/2016/histosCF_summer_May30/histograms/charge_flip/histograms_harvested_stage2_charge_flip_Tight.root"  
-  FITNAME = "summer_May30"
-        
+  infile = "/hdfs/local/ttH_2tau/andres/ttHAnalysis/2016/histosCF_summer_June6/histograms/charge_flip/histograms_harvested_stage2_charge_flip_Tight.root"
+  FITNAME = "summer_June6"
+   
   (misIDRatiosNum, misIDRatios) = readMisIDRatiosGen(infile)
   catRatiosNum, catRatios = readCategoryRatiosGen(infile)
   print_ratios_latex(misIDRatiosNum, "gen")   
-
+  """for k in bin_names_composite_nice:
+    print k, catRatios[k]
+  for k in bin_names_single:
+    print k, misIDRatios[k]"""
   chi2s = make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", y_range = (-0.001, 0.011))
-  select_categories(chi2s)
+  
+  (misIDRatiosNum, misIDRatios) = readMisIDRatiosGen(infile, rec = "_rec")
+  catRatiosNum, catRatios = readCategoryRatiosGen(infile, gen = "gen_rec")
+  print_ratios_latex(misIDRatiosNum, "gen_rec")   
+  """for k in bin_names_composite_nice:
+    print k, catRatios[k]
+  for k in bin_names_single:
+    print k, misIDRatios[k]"""
+  chi2s = make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", y_range = (-0.001, 0.011), name = "gen_rec")
+  
+  #closure test:
+  (exclude_bins, exclude_bins_num) = read_exclude_bins(EXCLUDED_FILE)
+  
+  catRatiosNum, catRatios = makeCatRatiosFrom6(misIDRatios, exclude_bins)
+  calculate_solution(catRatiosNum, exclude_bins_num, FITNAME, "closure", "pseudodata")
+  #file_misId = "fit_output_pseudodata_%s/fit_res%s.root" % (FITNAME, fittypestring)
+  
+  
+  #select_categories(chi2s)
   for exclude in [False, True]:
-    fittypestring = "_gen"
+    fittypestring = "_gen_rec"
     file_misId = "fit_output_pseudodata_%s/fit_res%s.root" % (FITNAME, fittypestring)
-    name = "gen_fit"
+    name = "gen_rec_fit"
     exclude_bins, exclude_bins_num = [], []
     if exclude:
       (exclude_bins, exclude_bins_num) = read_exclude_bins(EXCLUDED_FILE)
       name += "_exclusions"
       fittypestring += "_exclusions"
-    file_misId = "fit_output_pseudodata_%s/fit_res%s.root" % (FITNAME, fittypestring)
-    catRatiosNum, catRatios = readCategoryRatiosGen(infile, exclude_bins)
+    #file_misId = "fit_output_pseudodata_%s/fit_res%s.root" % (FITNAME, fittypestring)
+    catRatiosNum, catRatios = readCategoryRatiosGen(infile, exclude_bins, gen = "gen_rec")
     #print catRatiosNum
     #print ":::"
     #print exclude_bins
@@ -55,8 +76,8 @@ if __name__ == "__main__":
     print file_misId, fittypestring, exclude
     misIDRatios = readMisIDRatios(file_misId)
     make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", name = name, y_range = (-0.001, 0.011), excluded = exclude_bins)
-
-  FITTYPE = "" #can use also "shapes" or "hybrid" here
+    
+  FITTYPE = "" #can use also "shapes" or "hybrid" here if the fit results exist
   for datastring in ["pseudodata", "data"]:
     fittypestring = FITTYPE
     for exclude in [False, True]:
@@ -73,11 +94,5 @@ if __name__ == "__main__":
       calculate_solution(catRatiosNum, exclude_bins_num, FITNAME, fittypestring, datastring)
       misIDRatios = readMisIDRatios(file_misId)
       
-      make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", name = name, y_range = (-0.001, 0.011), excluded = exclude_bins)
-      #print misIDRatios
-      #print "___________"
-      #print catRatios
-      #for exclude_categories in [True, False]:
-      #  make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", name = datastring, exclude_categories = exclude_categories)
-  
+      make_pull_plot_21(misIDRatios, catRatios, mydir = "pull_plots_all", name = name, y_range = (-0.001, 0.011), excluded = exclude_bins)      
 

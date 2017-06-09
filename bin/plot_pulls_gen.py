@@ -12,12 +12,12 @@ def get_bin_nr_composite(cat):
 def get_bin_nr_single(cat):
   return bin_names_single.index(cat)
 
-def readMisIDRatiosGen(infile, processes = ["DY"]):
+def readMisIDRatiosGen(infile, processes = ["DY"], rec = ""):
   ratios = {}
   ratios_num = []
   f = TFile(infile)
   for p in processes:
-    effs = f.Get("gen_ratio/pt_eta_%s" % p)
+    effs = f.Get("gen_ratio/pt_eta_%s%s" % (p, rec))
     #print "gen_ratio/pt_eta_%s" % p
     totalHisto = effs.GetTotalHistogram()
     for bin_eta in range(1, totalHisto.GetNbinsY()+1):
@@ -31,7 +31,7 @@ def readMisIDRatiosGen(infile, processes = ["DY"]):
         #print "Bin (%d, %d): Eff = %f + %f - %f" % (bin_eta, bin_pt, eff * 100, effErrHi * 100, effErrLo*100)
   return (ratios_num,ratios)
 
-def readCategoryRatiosGen(infile, exclude_bins = []):
+def readCategoryRatiosGen(infile, exclude_bins = [], gen = "gen"):
   f = TFile(infile) 
   i = 0
   os_err = ROOT.Double()
@@ -39,8 +39,8 @@ def readCategoryRatiosGen(infile, exclude_bins = []):
   ratios = {}
   ratios_num = []
   for cat in bin_names_composite:
-    histo_OS = f.Get("gen/OS/%s/mass_ll" % cat)
-    histo_SS = f.Get("gen/SS/%s/mass_ll" % cat)
+    histo_OS = f.Get("%s/OS/%s/mass_ll" % (gen, cat))
+    histo_SS = f.Get("%s/SS/%s/mass_ll" % (gen, cat))
     os_count = histo_OS.IntegralAndError(0, histo_OS.GetNbinsX()+2, os_err)
     ss_count = histo_SS.IntegralAndError(0, histo_SS.GetNbinsX()+2, ss_err)
     if os_count > 0:
@@ -61,6 +61,20 @@ def readCategoryRatiosGen(infile, exclude_bins = []):
       i+=1
   return (ratios_num, ratios)
 
+
+def makeCatRatiosFrom6(misIDRatios, excluded = []):
+  ratios = {}
+  ratios_num = []
+  for cat in bin_names_composite_nice:
+    if cat in excluded: continue
+    (ratio1, ratio2) = cat.split("_")
+    cat_ratio = misIDRatios[ratio1][0] + misIDRatios[ratio2][0]
+    err = math.sqrt(misIDRatios[ratio1][1]**2 + misIDRatios[ratio2][1]**2)
+    err = misIDRatios[ratio1][1] + misIDRatios[ratio2][1]
+    #print cat, err, misIDRatios[ratio1][1], misIDRatios[ratio2][1]
+    ratios[cat] = (cat_ratio, err, err)
+    ratios_num.append((cat_ratio, err, err))
+  return (ratios_num, ratios)
 
 def make_pull_plot_gen(category, misIDRatios, catRatios):
   pull_plot = TH1D(category, category, 6, 0, 6 )
