@@ -55,6 +55,7 @@ def make_latex(fit1, fit2):
 
     latex = make_header()
     for b in range(21):
+        if b == 6: continue
         textcolor = "black"
         if ratios1[b][0] + ratios1[b][1] < ratios2[b][0] - ratios2[b][1] or \
            ratios1[b][0] - ratios1[b][1] > ratios2[b][0] + ratios2[b][1]:
@@ -82,11 +83,14 @@ def make_latex(fit1, fit2):
 
 if __name__ == "__main__":
   maindir = "/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/"
-  fit1 = {"indir": maindir+"fit_output_data_eleESER_mva_0_6_notrig", "type": "hybrid", "title": "Data hybrid"}
-  fit2 = {"indir": maindir+"fit_output_data_eleESER_mva_0_6_notrig", "type": "", "title": "Data histograms"}
+  fit1 = {"indir": maindir+"fit_output_data_shiftPeak", "type": "hybrid", "title": "Data hybrid"}
+  fit1 = {"indir": maindir+"fit_output_data_shiftPeak", "type": "shapes", "title": "Analytic fit"}
+  fit2 = {"indir": maindir+"fit_output_data_shiftPeak", "type": "", "title": "Histogram-based fit"}
+  #fit1 = {"indir": maindir+"fit_output_data_eleESER_mva_0_6_notrig", "type": "hybrid", "title": "Data hybrid"}
+  #fit2 = {"indir": maindir+"fit_output_data_eleESER_mva_0_6_notrig", "type": "", "title": "Data histograms"}
   #fit1 = {"indir": maindir+"fit_output_data_eleESER2", "type": "hybrid", "title": "Data hybrid"}
-  #fit2 = {"indir": maindir+"fit_output_data_eleESER2", "type": "", "title": "Data histograms"}
-  #outfile = "latex_output/data_hybrid_vs_histos_withcuts.tex"
-  outfile = "latex_output/data_hybrid_vs_histos.tex"
+  #fit2 = {"indir": maindir+"/2015/fit_output_data_eleESER2", "type": "", "title": "Data histograms 2015"}
+  outfile = "latex_output/data_analytic_vs_histos.tex"
+  #outfile = "latex_output/data_histos_2016_vs_2015.tex"
   f = open(outfile, "w")
   f.write(make_latex(fit1, fit2))
