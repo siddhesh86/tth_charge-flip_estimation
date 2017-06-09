@@ -59,15 +59,10 @@ def make_category_matrix(catRatios, weighted = True):
 
 def solve_matrix(catRatios):
   A = make_coefficient_matrix()
-  #print A
   (b, W) = make_category_matrix(catRatios)
-  #print W
-  ##print 1/W
   W = np.sqrt(np.diag(1/W))
-  #print W
   Aw = np.dot(W,A)
   Bw = np.dot(b,W)
-  #print W
   x_lstsq = np.linalg.lstsq(Aw,Bw)[0] # computing the numpy solution
 
   Q,R = np.linalg.qr(Aw) # qr decomposition of A
@@ -102,8 +97,8 @@ def calculate_uncertainties(M, deltab):
   uncs = [] 
   for i in range(6):    
     uncs.append(0)
-    for k in range(len(M)):
-      uncs[i] += (M[i, k] * deltab[k])**2
+    for k in range(len(M[0])):
+      uncs[i] += (M[i, k] * deltab[k]) ** 2      
     uncs[i] = math.sqrt(uncs[i])
   return np.array(uncs)
 
@@ -139,16 +134,14 @@ def print_ratios_latex(ratios, datastring):
 def calculate(catRatios, exclude_bins = [], weighted = True):
   A = make_coefficient_matrix(exclude_bins)
   (b, W) = make_category_matrix(catRatios, weighted)
-  #print W
-  w = np.diag(1/W)
+  w = np.diag(1/W**2)
   Aw = np.dot(w, A)  
   M = calculate_M(Aw)
   bw = np.dot(w, b)
   rates = calculate_rates(M, bw)
   (b, err) = make_category_matrix(catRatios)
-  uncs = calculate_uncertainties(M, np.dot(w,err))
+  uncs = calculate_uncertainties(np.dot(M,w), W)
   return (rates.tolist(), uncs.tolist())
-
 
 def calculate_solution(categoryRatios, exclude_bins, fitname, fittypestring, datastring):
   (rates, uncs) = calculate(categoryRatios, exclude_bins)
