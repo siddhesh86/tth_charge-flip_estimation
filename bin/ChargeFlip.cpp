@@ -30,7 +30,7 @@ int histograms_main() {
 	//! [part1]
 	// First define the location of the "auxiliaries" directory where we can
 	// source the input files containing the datacard shapes
-	string aux_shapes = "/home/andres/tth/histograms/histosCF_noTrigCuts_mva_0_6_v2/datacards";
+	string aux_shapes = "/home/andres/ttHAnalysis/2016/histosCF_summer_June6/datacards/charge_flip/";
 
 	// Create an empty CombineHarvester instance that will hold all of the
 	// datacard configuration and histograms etc.
@@ -45,6 +45,8 @@ int histograms_main() {
     map<string, VString> bkg_procs;
     bkg_procs["SS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
     bkg_procs["OS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
+    //bkg_procs["SS"] = {"DY_fake", "Singletop", "Diboson", "TTbar"};
+    //bkg_procs["OS"] = {"DY_fake", "Singletop", "Diboson", "TTbar"};
     map<string, VString> sig_procs;
     sig_procs["SS"] = {"DY"};
     sig_procs["OS"] = {"DY"};
@@ -166,7 +168,7 @@ int histograms_main() {
 	cout << ">> Extracting histograms from input root files...\n";
 	for (string era : {"13TeV"}) {
 		for (string chn : chns) {
-			string file = aux_shapes+ "/prepareDatacards_data_charge_flip_mass_ll.root";
+			string file = aux_shapes+ "/prepareDatacards_pseudodata_charge_flip_mass_ll.root";
 			cb.cp().channel({chn}).backgrounds().ExtractShapes(
 					file, "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS", "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS_$SYSTEMATIC");
 			cb.cp().channel({chn}).signals().ExtractShapes(
@@ -197,7 +199,7 @@ int histograms_main() {
 
 
     for (string chn : chns) {
-                string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_data_noTrigCuts_mva_0_6_v2/cards/"+chn+"cards/").c_str();
+                string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_pseudodata_summer_June6/cards/"+chn+"cards/").c_str();
                 boost::filesystem::create_directories(folder);
                 boost::filesystem::create_directories(folder + "/common");
 	    TFile output((folder + "/common/htt_" + chn + ".input.root").c_str(),
@@ -213,7 +215,12 @@ int histograms_main() {
     return 0;
 }
 
-
+/*** *
+     *
+     * Incomplete section follows:
+     *
+     *
+*/   
 int shapes_main(bool do_parametric = true) {
 	//! [part1]
 	// First define the location of the "auxiliaries" directory where we can

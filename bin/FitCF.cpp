@@ -211,7 +211,7 @@ int main(int argc, char* argv[]) {
     string shapeStr = "";
     if (shapeBased)
         shapeStr = "_shapes";
-    string which_fit = "data_eleESER_mva_0_6_notrig";
+    string which_fit = "pseudodata_summer_June6";
     read_results("fit_output_"+which_fit+"/results_cat"+shapeStr+".txt", chi2);
 
 
