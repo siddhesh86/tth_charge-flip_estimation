@@ -6,7 +6,7 @@ from ROOT import TFile, TH1D
 import ROOT
 from make_fits import read_fit_result, mkdir_p
 
-datacard_dir = "output_data_mu"
+datacard_dir = "output_data_mu_testNew"
 
 
 def combine_cards():
@@ -47,8 +47,8 @@ def combine_cards():
   f = open("./fit_%s/results_cat.txt" % (datacard_dir), "w")
   #print fit_results
   for fr in fit_results:
-    print "RES: %d %.8f + %.8f - %.8f" % (i, fr[0], fr[1], fr[2])
-    f.write("%d, %.8f, %.8f, %.8f\n" % (i, fr[0], fr[1], fr[2]))
+    print "RES: %d %.8f + %.8f - %.8f" % (i, fr[0]/2, fr[1]/2, fr[2]/2)
+    f.write("%d, %.8f, %.8f, %.8f\n" % (i, fr[0]/2, fr[1]/2, fr[2]/2))
     i += 1
   f.close()
   

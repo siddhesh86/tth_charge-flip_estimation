@@ -30,7 +30,7 @@ int histograms_main() {
 	//! [part1]
 	// First define the location of the "auxiliaries" directory where we can
 	// source the input files containing the datacard shapes
-	string aux_shapes = "/home/andres/tth/histograms/histosCF_mu2/datacards";
+	string aux_shapes = "/home/andres/ttHAnalysis/2016/histosCF_mu_summer/datacards/charge_flip/";
 
 	// Create an empty CombineHarvester instance that will hold all of the
 	// datacard configuration and histograms etc.
@@ -43,8 +43,8 @@ int histograms_main() {
 	VString chns = {"SS", "OS"};
 
     map<string, VString> bkg_procs;
-    bkg_procs["SS"] = {"DY_fake"/*, "WJets"*/, "Singletop", "Diboson", "TTbar"};
-    bkg_procs["OS"] = {"DY_fake"/*, "WJets"*/, "Singletop", "Diboson", "TTbar"};
+    bkg_procs["SS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
+    bkg_procs["OS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
     map<string, VString> sig_procs;
     sig_procs["SS"] = {"DY"};
     sig_procs["OS"] = {"DY"};
@@ -55,6 +55,12 @@ int histograms_main() {
     cats["OS_13TeV"] = {
 	    {0,"total"}};
 
+    VString shape_systs = {};
+    //VString shape_systs = {"CMS_ttHl_muonESBarrel1", "CMS_ttHl_muonESBarrel2",
+    //    "CMS_ttHl_muonESEndcap2", "CMS_ttHl_muonESEndcap2"};
+
+    VString shape_systs_signal = {/*"CMS_ttHl_muonER"*/
+    };
 
     cout << ">> Creating processes and observations...\n";
     for (string era : {"13TeV"}) {
@@ -84,17 +90,17 @@ int histograms_main() {
 
   //syst on normalization
   cb.cp().channel({"SS"}).signals()
-	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(2.0));
+	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(5.0));
 	cb.cp().channel({"SS"}).process({"DY_fake"})
-	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(1.5));
-	//cb.cp().channel({"SS"}).process({"WJets"})
-	//  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(1.5));
+	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(5.));
+	cb.cp().channel({"SS"}).process({"WJets"})
+	  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(5.));
 	cb.cp().channel({"SS"}).process({"Singletop"})
-	  .AddSyst(cb, "singletop_norm", "lnN", SystMap<>::init(1.5));
+	  .AddSyst(cb, "singletop_norm", "lnN", SystMap<>::init(5.));
 	cb.cp().channel({"SS"}).process({"Diboson"})
-	  .AddSyst(cb, "diboson_norm", "lnN", SystMap<>::init(1.5));
+	  .AddSyst(cb, "diboson_norm", "lnN", SystMap<>::init(5.));
   cb.cp().channel({"SS"}).process({"TTbar"})
-	  .AddSyst(cb, "ttbar_norm", "lnN", SystMap<>::init(1.5));
+	  .AddSyst(cb, "ttbar_norm", "lnN", SystMap<>::init(5.));
 	
   cb.cp().channel({"OS"}).signals()
 	  .AddSyst(cb, "lumi", "lnN", SystMap<>::init(1.05));
@@ -103,44 +109,40 @@ int histograms_main() {
 
   //syst on normalization
 	cb.cp().channel({"OS"}).signals()
-	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(2.0));
+	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(5.0));
 	cb.cp().channel({"OS"}).process({"DY_fake"})
-	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(1.5));
-	//cb.cp().channel({"OS"}).process({"WJets"})
-	//  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(1.5));
+	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(5.));
+	cb.cp().channel({"OS"}).process({"WJets"})
+	  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(5.));
 	cb.cp().channel({"OS"}).process({"Singletop"})
-	  .AddSyst(cb, "singletop_norm", "lnN", SystMap<>::init(1.5));
+	  .AddSyst(cb, "singletop_norm", "lnN", SystMap<>::init(5.));
 	cb.cp().channel({"OS"}).process({"Diboson"})
-	  .AddSyst(cb, "diboson_norm", "lnN", SystMap<>::init(1.5));
+	  .AddSyst(cb, "diboson_norm", "lnN", SystMap<>::init(5.));
     cb.cp().channel({"OS"}).process({"TTbar"})
-	  .AddSyst(cb, "ttbar_norm", "lnN", SystMap<>::init(1.5));
+	  .AddSyst(cb, "ttbar_norm", "lnN", SystMap<>::init(5.));
 	/*cb.cp().channel({"OS"}).process({"QCD"})
 	  .AddSyst(cb, "QCD_norm", "lnN", SystMap<>::init(1.10));
 	*/
 
 
     auto bins_ss = cb.cp().channel({"SS"}).bin_set();
-        /*for (auto bin : bins_ss) {
-         std::cout << "bin " << bin << std::endl;
-         if (bin == "EE_LL"){
-            //Don't add any signal shape uncertainties in this case (all are empty & the fit doesn't work)
-         }
-         else{  //Normal bins do have signal
-            for (auto shape_syst : shape_systs) {
-                cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-            }
-            for (auto shape_syst_sig : shape_systs_signal) {
-                cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-            }        
-        }
-        //Backgrounds for all
-        for (auto shape_syst : shape_systs) {
-            cb.cp().channel({"SS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-        }        
+    /*for (auto bin : bins_ss) {
+      std::cout << "bin " << bin << std::endl;
+      for (auto shape_syst : shape_systs) {
+          cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+      }
+      for (auto shape_syst_sig : shape_systs_signal) {
+          cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+      }        
     }*/
-
+    //Backgrounds for all
+    /*for (auto shape_syst : shape_systs) {
+        cb.cp().channel({"SS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+    }*/        
+    //}
+    
     auto bins_os = cb.cp().channel({"OS"}).bin_set();
-    /*for (auto bin : bins_os) {
+    for (auto bin : bins_os) {
         for (auto shape_syst : shape_systs) {
             cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
             cb.cp().channel({"OS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
@@ -148,7 +150,7 @@ int histograms_main() {
         for (auto shape_syst_sig : shape_systs_signal) {
             cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
         }
-    }*/
+    }
 
 	cout << ">> Extracting histograms from input root files...\n";
 	for (string era : {"13TeV"}) {
@@ -184,7 +186,7 @@ int histograms_main() {
 
 
     for (string chn : chns) {
-                string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_pseudodata_mu/cards/"+chn+"cards/").c_str();
+                string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_pseudodata_mu_summer_May10/cards/"+chn+"cards/").c_str();
                 boost::filesystem::create_directories(folder);
                 boost::filesystem::create_directories(folder + "/common");
 	    TFile output((folder + "/common/htt_" + chn + ".input.root").c_str(),
