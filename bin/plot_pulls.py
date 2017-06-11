@@ -4,6 +4,13 @@ from ROOT import TFile, TH1D, TCanvas
 import ROOT
 from utils import read_category_ratios, bin_names_composite, bin_names_single, mkdir_p
 
+"""@file docstring
+Script for plotting pulls, superseded by plot_pulls_all.py
+
+@author Andres Tiko <andres.tiko@cern.ch>
+"""
+
+
 def get_bin_nr_composite(cat):
   return bin_names_composite.index(cat)
 

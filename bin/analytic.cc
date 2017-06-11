@@ -47,7 +47,13 @@
 #include <Math/Functor.h>
 #include <Fit/Fitter.h>
 
+/*! \file FitCP.cpp
+    \brief Fit 21 categories of electron pairs with analytic functions or combination of analytic functions and histograms
 
+    Adapted from ttH multilepton analysis code in
+    https://github.com/stiegerb/cmgtools-lite/blob/80X_for2016basis_chargeFlips/TTHAnalysis/python/plotter/chargeFlips/chargeMisIdProb.cc
+    by  Andres Tiko <andres.tiko@cern.ch>
+*/
 
 using namespace std;
 using namespace RooFit;
@@ -153,8 +159,6 @@ RooAbsPdf* shapeSB(string tag, RooRealVar* x, RooRealVar* nSig, RooRealVar* nBkg
 
   RooAbsPdf* bkg_pdf;
   if (ends_with(tag, "SS") || useSignalHisto == false){ //Analytic for SS in hybrid
-      //RooRealVar* exp_tau=new RooRealVar( ("expt_"+tag).c_str(), "tau", -0.05, -40., -0.04);
-      //RooExponential* exp_pdf=new RooExponential( ("exp_pdf_"+tag).c_str(), "bkg shape", *x, *exp_tau );
       RooRealVar* exp_alpha = new RooRealVar( ("expa_"+tag).c_str(), "alpha", 40.0, 20.0, 160.0);
       RooRealVar* exp_beta  = new RooRealVar( ("expb_"+tag).c_str(), "beta",  0.05, 0.0, 2.0);
       RooRealVar* exp_gamma = new RooRealVar( ("expg_"+tag).c_str(), "gamma", 0.02, 0.0, 0.1);
@@ -165,8 +169,6 @@ RooAbsPdf* shapeSB(string tag, RooRealVar* x, RooRealVar* nSig, RooRealVar* nBkg
   else{
       bkg_pdf = makeRooHistPdfBkg(tag, dir, x);
   }
-  //RooRealVar* n_Z=new RooRealVar( ("N_{sig} "+tag).c_str(),"n Z events",501.0, 500., 10000000.);
-  // RooRealVar* n_bkg=new RooRealVar( ("N_{bkg} "+tag).c_str(),"n bkg events", 3., 0., 600000.);
   RooArgList* listPdf=new RooArgList( *bkg_pdf, *sig );
   RooArgList* listPdfVal=new RooArgList( *nBkg, *nSig );
   RooAddPdf* bw_tot=new RooAddPdf( "bw_EBEB_MC", "PDF ee", *listPdf, *listPdfVal );
@@ -200,10 +202,6 @@ vector<float> doSingleFit(TH1* histo, TH1* signalHisto, string category, string 
   RooRealVar nSig("nSig","nSig",data.sumEntries(),0,2*data.sumEntries());
   RooRealVar nBkg("nBkg","nBkg",1.,0,2*data.sumEntries());
 
-  // ostringstream os;
-  // os<<categ;
-  //RooNumConvPdf bw;
-  //RooExponential exp_pdf;
   RooAbsPdf* shape=shapeSB( ("s"+category+channel),&mass, &nSig, &nBkg, useSignalHisto, signalHisto, dir);
 
   RooFitResult* result;
@@ -264,11 +262,9 @@ vector<float> doSingleFit(TH1* histo, TH1* signalHisto, string category, string 
   return v;
 }
 
-
 vector<float> doSingleFit(TH1* histo, string category, string channel, string plotDir, TDirectory* dir) {
   return doSingleFit(histo, nullptr, category, channel, plotDir, false, dir);
 }
-
 
 map<string, vector<float> > doFits(string tag, string file, bool isData, string singleCateg, bool useSignalHisto = true) {
   TFile* f=new TFile(file.c_str(), "read");
@@ -301,9 +297,7 @@ map<string, vector<float> > doFits(string tag, string file, bool isData, string 
   for (int i=0; i<21; i++) {
     string cat = cats[i];
 	for (auto channel : chns) {
-	    //std::cout << Form("ttH_charge_flip_%s_%s", cat.data(), channel.data()) << std::endl;
         TDirectory* dir = (TDirectory*)f->Get(Form("ttH_charge_flip_%s_%s", channel.data(), cat.data())) ;
-        //std::cout << file.c_str() << " " << Form("ttH_charge_flip_%s_%s", channel.data(), cat.data()) << " " << dir << endl;
         TH1* histo = (TH1*)dir->Get("x_data_obs");
          
         string name=Form("%s_%s", channel.data(), cat.data());
@@ -328,11 +322,8 @@ map<string, vector<float> > doFits(string tag, string file, bool isData, string 
     }
     double ratio = vals_ss[cat][0] / (vals_ss[cat][0] + vals_os[cat][0]);
     
-    //std::cout << vals_ss[cat][1] << " " << vals_ss[cat][0] << " " << vals_ss[cat][1] / vals_ss[cat][0] << endl;
     TDirectory* dSS = (TDirectory*)f->Get(Form("ttH_charge_flip_SS_%s", cat.data()));
     int dataEventsSS = ((TH1*)dSS->Get("x_data_obs"))->Integral();
-    //TDirectory* dOS = (TDirectory*)f->Get(Form("ttH_charge_flip_OS_%s", cat.data()));
-    //int dataEventsOS = ((TH1*)dOS->Get("x_data_obs"))->Integral();
     
     //Hack for both fits zero case:
     if (vals_ss[cat][0] == 0 && vals_os[cat][0] == 0)

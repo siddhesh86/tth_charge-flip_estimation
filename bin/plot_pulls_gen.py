@@ -6,6 +6,14 @@ from utils import read_category_ratios, bin_names_composite, bin_names_composite
 from plot_pulls import contained_in, get_other_component, get_all_containers
 import math
 
+"""@file docstring
+Script for plotting generator-level pulls, main program superseded by plot_pulls_all.py,
+but contains most of the necessary methods
+
+@author Andres Tiko <andres.tiko@cern.ch>
+"""
+
+
 def get_bin_nr_composite(cat):
   return bin_names_composite.index(cat)
 
@@ -50,8 +58,6 @@ def readCategoryRatiosGen(infile, exclude_bins = [], gen = "gen"):
       ratio = 1.
       err = 1.
     if err == 0. : err = -math.log(0.32) / os_count
-    #print "%d, %f, %f, %f" % (i, ratio, err, err)
-    #print get_bin_name_nice(i), get_bin_name_nice(i) in exclude_bins
     if get_bin_name_nice(i) in exclude_bins: 
       i += 1
       continue
@@ -61,7 +67,7 @@ def readCategoryRatiosGen(infile, exclude_bins = [], gen = "gen"):
       i+=1
   return (ratios_num, ratios)
 
-
+#Creates 21 category ratios by summing the 6 and their uncertainties
 def makeCatRatiosFrom6(misIDRatios, excluded = []):
   ratios = {}
   ratios_num = []
@@ -69,9 +75,8 @@ def makeCatRatiosFrom6(misIDRatios, excluded = []):
     if cat in excluded: continue
     (ratio1, ratio2) = cat.split("_")
     cat_ratio = misIDRatios[ratio1][0] + misIDRatios[ratio2][0]
-    err = math.sqrt(misIDRatios[ratio1][1]**2 + misIDRatios[ratio2][1]**2)
+    #err = math.sqrt(misIDRatios[ratio1][1]**2 + misIDRatios[ratio2][1]**2)
     err = misIDRatios[ratio1][1] + misIDRatios[ratio2][1]
-    #print cat, err, misIDRatios[ratio1][1], misIDRatios[ratio2][1]
     ratios[cat] = (cat_ratio, err, err)
     ratios_num.append((cat_ratio, err, err))
   return (ratios_num, ratios)
@@ -112,7 +117,7 @@ def make_pull_plot_gen(category, misIDRatios, catRatios):
   c.SaveAs("%s/%s_pulls.pdf" % (mydir, category))
   c.SaveAs("%s/%s_pulls.png" % (mydir, category))
 
-
+#Makes pull plots for comparing 21 category ratios to sums obtained from 6
 def make_pull_plot_21(misIDRatios, catRatios, name = "gen", mydir = "pull_plots_21", y_range = None, excluded = []):
   pull_plots = []
   sum_plots = []
@@ -154,28 +159,21 @@ def make_pull_plot_21(misIDRatios, catRatios, name = "gen", mydir = "pull_plots_
     sum_plots_2[b-1].SetBinContent(b, value)
     sum_plots_2[b-1].SetBinError(b, err)
 
-    #print pull_plots[b-1].GetBinContent(b), sum_plots[b-1].GetBinContent(b), sum_plots_2[b-1].GetBinContent(b)
     sum_plots[b-1].Add(sum_plots_2[b-1])
     
     test1.SetBinContent(1, pull_plots[b-1].GetBinContent(b))
     test1.SetBinError(1, pull_plots[b-1].GetBinError(b))
     test2.SetBinContent(1, sum_plots[b-1].GetBinContent(b))
     test2.SetBinError(1, sum_plots[b-1].GetBinError(b))
-    #print test1.Chi2Test(test2, "WW")
     #chi2s.append(test1.Chi2Test(test2, "WW"))
+    #Chi2 method from histogram doesn't give expected results, will calculate manually
     chi2s[bin_names_composite_nice[b-1]] = abs(test1.GetBinContent(1) - test2.GetBinContent(1)) / (test1.GetBinError(1) + test2.GetBinError(1))
-    #if value_gen > 0 and False: 
-    #  sum_plots[b-1].Scale(1/pull_plots[b-1].Integral())
-    #  pull_plots[b-1].Scale(1/pull_plots[b-1].Integral())
     
     gen_plot.Add(pull_plots[b-1])
     sum_plot.Add(sum_plots[b-1])
 
   if y_range:
     gen_plot.SetAxisRange(y_range[0], y_range[1],"Y")
-  #others_plot.SetAxisRange(-0.006, 0.006,"Y")
-  #others_plot.GetXaxis().SetBinLabel(b,bin_names[b-1])
-  #true_plot.GetXaxis().SetBinLabel(b,bin_names[b-1])
   
   gen_plot.SetLineColor(ROOT.kRed)
   gen_plot.SetLineWidth(2)
@@ -201,13 +199,7 @@ def make_pull_plot_21(misIDRatios, catRatios, name = "gen", mydir = "pull_plots_
 
 
 if __name__ == "__main__":
-  infile = "/hdfs/local/ttH_2tau/andres/ttHAnalysis/2016/histosCF_summer2/histograms/charge_flip/histograms_harvested_stage2_charge_flip_Tight.root"  
-        
+  infile = "/hdfs/local/ttH_2tau/andres/ttHAnalysis/2016/histosCF_summer_June6/histograms/charge_flip/histograms_harvested_stage2_charge_flip_Tight.root"  
   misIDRatios = readMisIDRatiosGen(infile)
   catRatios = readCategoryRatiosGen(infile)
-  #for bin in bin_names_composite:
-  #for bin in bin_names_single:
-  #  make_pull_plot_gen(bin, misIDRatios, catRatios)
   make_pull_plot_21(misIDRatios, catRatios)
-
-

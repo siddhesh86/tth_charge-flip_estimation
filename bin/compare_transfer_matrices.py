@@ -2,6 +2,11 @@ from ROOT import TFile, TH2D, TCanvas
 import ROOT
 from utils import mkdir_p, bin_names_single
 
+"""@file docstring
+Plot transfer matrices to illustrate differences in SS and OS in reconstructing pT and eta
+
+@author Andres Tiko <andres.tiko@cern.ch>
+"""
 
 def column_sum(histo, column):
   col_sum = 0.

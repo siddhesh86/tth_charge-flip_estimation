@@ -26,10 +26,16 @@
 
 using namespace std;
 
+/*! \file ChargeFlipMu.cpp
+    \brief Generate datacards for muon charge flip fit
+
+    @author  Andres Tiko <andres.tiko@cern.ch>    
+
+    TODO: paths hardcoded, should make configurable, see comments
+*/
+
 int histograms_main() {
-	//! [part1]
-	// First define the location of the "auxiliaries" directory where we can
-	// source the input files containing the datacard shapes
+	// source the input files containing the datacard shapes, change path accordingly
 	string aux_shapes = "/home/andres/ttHAnalysis/2016/histosCF_mu_summer/datacards/charge_flip/";
 
 	// Create an empty CombineHarvester instance that will hold all of the
@@ -42,44 +48,44 @@ int histograms_main() {
 	// the vector below specifies a bin name and corresponding bin_id.
 	VString chns = {"SS", "OS"};
 
-    map<string, VString> bkg_procs;
-    bkg_procs["SS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
-    bkg_procs["OS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
-    map<string, VString> sig_procs;
-    sig_procs["SS"] = {"DY"};
-    sig_procs["OS"] = {"DY"};
+  map<string, VString> bkg_procs;
+  bkg_procs["SS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
+  bkg_procs["OS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
+  map<string, VString> sig_procs;
+  sig_procs["SS"] = {"DY"};
+  sig_procs["OS"] = {"DY"};
 
-    map<string, Categories> cats;
-    cats["SS_13TeV"] = {
-	    {0,"total"}};
-    cats["OS_13TeV"] = {
-	    {0,"total"}};
+  map<string, Categories> cats;
+  cats["SS_13TeV"] = {
+    {0,"total"}};
+  cats["OS_13TeV"] = {
+    {0,"total"}};
 
-    VString shape_systs = {};
-    //VString shape_systs = {"CMS_ttHl_muonESBarrel1", "CMS_ttHl_muonESBarrel2",
-    //    "CMS_ttHl_muonESEndcap2", "CMS_ttHl_muonESEndcap2"};
+  VString shape_systs = {};
+  //VString shape_systs = {"CMS_ttHl_muonESBarrel1", "CMS_ttHl_muonESBarrel2",
+  //    "CMS_ttHl_muonESEndcap2", "CMS_ttHl_muonESEndcap2"};
 
-    VString shape_systs_signal = {/*"CMS_ttHl_muonER"*/
-    };
+  VString shape_systs_signal = {/*"CMS_ttHl_muonER"*/
+  };
 
-    cout << ">> Creating processes and observations...\n";
-    for (string era : {"13TeV"}) {
-	    for (auto chn : chns) {
-		    cb.AddObservations(
-				    {"*"}, {"htt"}, {era}, {chn}, cats[chn+"_"+era]);
-		    cb.AddProcesses(
-				    {"*"}, {"htt"}, {era}, {chn}, bkg_procs[chn], cats[chn+"_"+era], false);
-		    cb.AddProcesses(
-				    {"*"}, {"htt"}, {era}, {chn}, sig_procs[chn], cats[chn+"_"+era], true);
-	    }
+  cout << ">> Creating processes and observations...\n";
+  for (string era : {"13TeV"}) {
+    for (auto chn : chns) {
+	    cb.AddObservations(
+			    {"*"}, {"htt"}, {era}, {chn}, cats[chn+"_"+era]);
+	    cb.AddProcesses(
+			    {"*"}, {"htt"}, {era}, {chn}, bkg_procs[chn], cats[chn+"_"+era], false);
+	    cb.AddProcesses(
+			    {"*"}, {"htt"}, {era}, {chn}, sig_procs[chn], cats[chn+"_"+era], true);
     }
+  }
 
-    //Some of the code for this is in a nested namespace, so
-    // we'll make some using declarations first to simplify things a bit.
-    using ch::syst::SystMap;
-    using ch::syst::era;
-    using ch::syst::bin_id;
-    using ch::syst::process;
+  //Some of the code for this is in a nested namespace, so
+  // we'll make some using declarations first to simplify things a bit.
+  using ch::syst::SystMap;
+  using ch::syst::era;
+  using ch::syst::bin_id;
+  using ch::syst::process;
 
 
   //syst on luminosity
@@ -125,36 +131,37 @@ int histograms_main() {
 	*/
 
 
-    auto bins_ss = cb.cp().channel({"SS"}).bin_set();
-    /*for (auto bin : bins_ss) {
-      std::cout << "bin " << bin << std::endl;
+  auto bins_ss = cb.cp().channel({"SS"}).bin_set();
+  /*for (auto bin : bins_ss) {
+    std::cout << "bin " << bin << std::endl;
+    for (auto shape_syst : shape_systs) {
+        cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+    }
+    for (auto shape_syst_sig : shape_systs_signal) {
+        cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+    }        
+  }*/
+  //Backgrounds for all
+  /*for (auto shape_syst : shape_systs) {
+      cb.cp().channel({"SS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+  }*/        
+  //}
+    
+  auto bins_os = cb.cp().channel({"OS"}).bin_set();
+  for (auto bin : bins_os) {
       for (auto shape_syst : shape_systs) {
-          cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+          cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
+          cb.cp().channel({"OS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
       }
       for (auto shape_syst_sig : shape_systs_signal) {
-          cb.cp().channel({"SS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-      }        
-    }*/
-    //Backgrounds for all
-    /*for (auto shape_syst : shape_systs) {
-        cb.cp().channel({"SS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-    }*/        
-    //}
-    
-    auto bins_os = cb.cp().channel({"OS"}).bin_set();
-    for (auto bin : bins_os) {
-        for (auto shape_syst : shape_systs) {
-            cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-            cb.cp().channel({"OS"}).bin({bin}).backgrounds().AddSyst(cb, shape_syst, "shape", SystMap<>::init(1.00));
-        }
-        for (auto shape_syst_sig : shape_systs_signal) {
-            cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
-        }
-    }
+          cb.cp().channel({"OS"}).bin({bin}).signals().AddSyst(cb, shape_syst_sig, "shape", SystMap<>::init(1.00));
+      }
+  }
 
 	cout << ">> Extracting histograms from input root files...\n";
 	for (string era : {"13TeV"}) {
 		for (string chn : chns) {
+// ! Change filename here for data vs. pseudodata
 			string file = aux_shapes+ "/prepareDatacards_pseudodata_charge_flip_mass_ll.root";
 			cb.cp().channel({chn}).backgrounds().ExtractShapes(
 					file, "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS", "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS_$SYSTEMATIC");
@@ -183,23 +190,22 @@ int histograms_main() {
 	// Observation, Process and Systematic entries in the CombineHarvester
 	// instance.
 
+  for (string chn : chns) {
+// ! Where to write output datacards, update accordingly
 
-
-    for (string chn : chns) {
-                string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_pseudodata_mu_summer_May10/cards/"+chn+"cards/").c_str();
-                boost::filesystem::create_directories(folder);
-                boost::filesystem::create_directories(folder + "/common");
-	    TFile output((folder + "/common/htt_" + chn + ".input.root").c_str(),
-			    "RECREATE");
-	    auto bins = cb.cp().channel({chn}).bin_set();
-	    for (auto b : bins) {
-		    cout << ">> Writing datacard for bin: " << b << "\r" << flush;
-		    cb.cp().channel({chn}).bin({b}).WriteDatacard(
-				    folder + "/" + b + ".txt", output);
-	    }
-     output.Close();
+    string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_pseudodata_mu_summer_May10/cards/"+chn+"cards/").c_str();
+    boost::filesystem::create_directories(folder);
+    boost::filesystem::create_directories(folder + "/common");
+    TFile output((folder + "/common/htt_" + chn + ".input.root").c_str(), "RECREATE");
+    auto bins = cb.cp().channel({chn}).bin_set();
+    for (auto b : bins) {
+	    cout << ">> Writing datacard for bin: " << b << "\r" << flush;
+	    cb.cp().channel({chn}).bin({b}).WriteDatacard(
+			    folder + "/" + b + ".txt", output);
     }
-    return 0;
+   output.Close();
+  }
+  return 0;
 }
 
 

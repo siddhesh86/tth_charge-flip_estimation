@@ -4,6 +4,12 @@ from ROOT import TFile, TH1D, TCanvas
 import ROOT
 from utils import read_category_ratios, bin_names_composite as bin_names, bin_names_single, mkdir_p
 
+"""@file docstring
+Pull plots for systematic uncertainties
+
+@author Andres Tiko <andres.tiko@cern.ch>
+"""
+
 def make_pull_plots(fittype, syst):
   syst_name = syst.split("_")[2]
   pull_plot = TH1D(syst_name, syst_name, 21, 0, 21 )
@@ -29,8 +35,8 @@ def make_pull_plots(fittype, syst):
   c = TCanvas("Plot", "Plot", 800,600)
   ROOT.gStyle.SetOptStat(0)
   pull_plot.Draw()
-  c.SaveAs("plot_pulls/syst_pulls_%s.pdf" % syst_name)
-  c.SaveAs("plot_pulls/syst_pulls_%s.png" % syst_name)  
+  c.SaveAs("../plots/plot_pulls/syst_pulls_%s.pdf" % syst_name)
+  c.SaveAs("../plots/plot_pulls/syst_pulls_%s.png" % syst_name)  
    
 
 

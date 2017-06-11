@@ -4,11 +4,20 @@ import ROOT
 import errno    
 import os
 
+"""@file docstring
+Utility functions for charge flip estimation
+
+@author Andres Tiko <andres.tiko@cern.ch>
+"""
+
+"""Bin names in the form they are in the ntuple"""
 bin_names_composite = ["BB_LL", "BB_ML", "BB_MM", "BB_HL", "BB_HM", "BB_HH",
       "EE_LL", "EE_ML", "EE_MM", "EE_HL", "EE_HM", "EE_HH",
       "BE_LL", "BE_ML", "EB_ML", "BE_MM", "BE_HL", "EB_HL",
       "BE_HM", "EB_HM", "BE_HH"]
 
+"""Nicer bin names - historical reason why 2 sets used
+   TODO: change the format in ntuples"""
 bin_names_composite_nice = ["BL_BL", "BM_BL", "BM_BM", "BH_BL", "BH_BM", "BH_BH",
       "EL_EL", "EM_EL", "EM_EM", "EH_EL", "EH_EM", "EH_EH",
       "BL_EL", "BM_EL", "EM_BL", "BM_EM", "BH_EL", "EH_BL",
@@ -46,9 +55,7 @@ def read_category_ratios(file_cats, exclude_bins = []):
       spl[2] = 1e-8
       spl[3] = 1e-8
     ratios.append((float(spl[1]), float(spl[2]), float(spl[3])))
-    ratios_dict[bin_name] = (float(spl[1]), float(spl[2]), float(spl[3]) )
-    #else:
-    #ratios.append((float(spl[1]), 0.01))
+    ratios_dict[bin_name] = (float(spl[1]), float(spl[2]), float(spl[3]) )    
   return (ratios, ratios_dict)
 
 
@@ -60,7 +67,6 @@ def readMisIDRatios(file_misId):
   for etaBin in range(1, misIdHisto.GetNbinsY()+1):
     for ptBin in range(1, misIdHisto.GetNbinsX()+1):
       ratios[get_bin_name_single(etaBin, ptBin)] = (misIdHisto.GetBinContent(ptBin, etaBin), misIdHisto.GetBinError(ptBin, etaBin), misIdHisto.GetBinError(ptBin, etaBin))
-      #print "MisID (%d, %d): %f" % (etaBin, ptBin, ratio*100)
   return ratios
   
 def get_bin_name_single(bin_nr_eta, bin_nr_pt):
@@ -103,7 +109,6 @@ def make_title(name, excluded):
 
 def fit_results_to_file(rates, uncs, fittype, fitname, datastring):
     fname = "fit_output_%s_%s/fit_res%s.root" % (datastring, fitname, fittype)
-    #print "FNAME", fname 
     f = TFile(fname,"recreate")
     f.cd()
 
@@ -117,7 +122,6 @@ def fit_results_to_file(rates, uncs, fittype, fitname, datastring):
         #print "%d %f %f %f" %(i, (i%NbinsPt)+1, (i/NbinsPt)+1, rates[i])
         h.SetBinContent((i % NbinsPt)+1, (i / NbinsPt)+1, rates[i])
         h.SetBinError((i % NbinsPt)+1, (i / NbinsPt)+1, uncs[i])
-
     f.Write()
     f.Close()
 

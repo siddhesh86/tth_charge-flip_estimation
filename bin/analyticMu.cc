@@ -47,7 +47,13 @@
 #include <Math/Functor.h>
 #include <Fit/Fitter.h>
 
+/*! \file FitCP.cpp
+    \brief Fit 21 categories of muon pairs with analytic functions or combination of analytic functions and histograms
 
+    Adapted from ttH multilepton analysis code in
+    https://github.com/stiegerb/cmgtools-lite/blob/80X_for2016basis_chargeFlips/TTHAnalysis/python/plotter/chargeFlips/chargeMisIdProb.cc
+    by  Andres Tiko <andres.tiko@cern.ch>
+*/
 
 using namespace std;
 using namespace RooFit;
@@ -56,15 +62,11 @@ typedef vector<string> VString;
 
 
 float getErr(float m1, float m2, float e1, float e2, int dataEventsSS) {
-  //float e=pow(e1/m1,2)+pow(e2/m2,2);
-  //if(m2==0) return 1;
-  cout << "error " << m1 << " " << m2 << " " << e1 << " " << e2 << " " << endl;
-  //return (m1/m2)*sqrt(e);
+  //cout << "error " << m1 << " " << m2 << " " << e1 << " " << e2 << " " << endl;
   float e=pow(e1/m1,2)+pow((e1+e2)/(m1+m2),2);
   if(m2==0) return 1;
   if(m1==0 && e1==0)
     e1 = max(1, dataEventsSS);
-  //cout << "error " << m1 << " " << m2 << " " << e1 << " " << e2 << " " << sqrt(pow(e1/m2,2)) << " " << endl;
   if(m1==0) return sqrt(pow(e1/m2,2));
   return (m1/(m1+m2))*sqrt(e);
 }
@@ -153,8 +155,6 @@ RooAbsPdf* shapeSB(string tag, RooRealVar* x, RooRealVar* nSig, RooRealVar* nBkg
 
   RooAbsPdf* bkg_pdf;
   if (ends_with(tag, "SS") || useSignalHisto == false){ //Analytic for SS in hybrid
-      //RooRealVar* exp_tau=new RooRealVar( ("expt_"+tag).c_str(), "tau", -0.05, -40., -0.04);
-      //bkg_pdf=new RooExponential( ("exp_pdf_"+tag).c_str(), "bkg shape", *x, *exp_tau );
       RooRealVar* exp_alpha = new RooRealVar( ("expa_"+tag).c_str(), "alpha", 40.0, 20.0, 160.0);
       RooRealVar* exp_beta  = new RooRealVar( ("expb_"+tag).c_str(), "beta",  0.05, 0.0, 2.0);
       RooRealVar* exp_gamma = new RooRealVar( ("expg_"+tag).c_str(), "gamma", 0.02, 0.0, 0.1);
@@ -165,8 +165,6 @@ RooAbsPdf* shapeSB(string tag, RooRealVar* x, RooRealVar* nSig, RooRealVar* nBkg
   else{
       bkg_pdf = makeRooHistPdfBkg(tag, dir, x);
   }
-  //RooRealVar* n_Z=new RooRealVar( ("N_{sig} "+tag).c_str(),"n Z events",501.0, 500., 10000000.);
-  // RooRealVar* n_bkg=new RooRealVar( ("N_{bkg} "+tag).c_str(),"n bkg events", 3., 0., 600000.);
   RooArgList* listPdf=new RooArgList( *bkg_pdf, *sig );
   RooArgList* listPdfVal=new RooArgList( *nBkg, *nSig );
   RooAddPdf* bw_tot=new RooAddPdf( "bw_EBEB_MC", "PDF ee", *listPdf, *listPdfVal );
@@ -188,22 +186,9 @@ vector<float> doSingleFit(TH1* histo, TH1* signalHisto, string category, string 
 
   vector<float> v(4,0);
 
-  /*if(data.sumEntries() < 0.001 || data.numEntries() <10 ) {
-    v[0]=histo->Integral(histo->GetXaxis()->FindBin(70), histo->GetXaxis()->FindBin(110) );
-    v[1]=sqrt( v[0] ); //not true for MC
-    v[2]=histo->Integral()-v[0];
-    v[3]=sqrt( v[2] );
-    cout<<"result:\t"<<histo->GetName()<<"\t"<<v[0]<<"\t"<<v[1]<<endl;
-    return v;
-  }*/
-
   RooRealVar nSig("nSig","nSig",data.sumEntries(),0,2*data.sumEntries());
   RooRealVar nBkg("nBkg","nBkg",1.,0,2*data.sumEntries());
 
-  // ostringstream os;
-  // os<<categ;
-  //RooNumConvPdf bw;
-  //RooExponential exp_pdf;
   RooAbsPdf* shape=shapeSB( ("s"+category+channel),&mass, &nSig, &nBkg, useSignalHisto, signalHisto, dir);
 
   RooFitResult* result;
@@ -254,8 +239,6 @@ vector<float> doSingleFit(TH1* histo, TH1* signalHisto, string category, string 
 
   delete shape;
   //delete data;
-
-
   v[0]=N;
   v[1]=eN;
   v[2]=NB;
@@ -342,10 +325,7 @@ map<string, vector<float> > doFits(string tag, string file, bool isData, string 
 
 }
 
-
-
 int main(int argc, char* argv[]) {
-
   string file;
   bool isData=false;
   bool useSignalHisto = false;
@@ -369,4 +349,3 @@ int main(int argc, char* argv[]) {
   //==============================================
   map<string, vector<float> > vals=doFits(tag, file, isData, singleCateg, useSignalHisto);
 }
-

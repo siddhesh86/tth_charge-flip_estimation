@@ -5,6 +5,11 @@ import os
 from plot_pulls import bin_names_composite, bin_names_single, readMisIdRatios
 from utils import read_category_ratios, get_bin_name
 
+"""@file docstring
+Script for plotting comparisons between different types of fits (histogram-based, analytic and hybrid
+
+@author Andres Tiko <andres.tiko@cern.ch>
+"""
 
 
 def make_category_matrix(catRatios, weighted = True):
@@ -83,14 +88,12 @@ def make_latex(fit1, fit2):
 
 if __name__ == "__main__":
   maindir = "/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/"
-  fit1 = {"indir": maindir+"fit_output_data_shiftPeak", "type": "hybrid", "title": "Data hybrid"}
+  #fit1 = {"indir": maindir+"fit_output_data_shiftPeak", "type": "hybrid", "title": "Data hybrid"}
+  
+  #Input fits to compare  
   fit1 = {"indir": maindir+"fit_output_data_shiftPeak", "type": "shapes", "title": "Analytic fit"}
   fit2 = {"indir": maindir+"fit_output_data_shiftPeak", "type": "", "title": "Histogram-based fit"}
-  #fit1 = {"indir": maindir+"fit_output_data_eleESER_mva_0_6_notrig", "type": "hybrid", "title": "Data hybrid"}
-  #fit2 = {"indir": maindir+"fit_output_data_eleESER_mva_0_6_notrig", "type": "", "title": "Data histograms"}
-  #fit1 = {"indir": maindir+"fit_output_data_eleESER2", "type": "hybrid", "title": "Data hybrid"}
-  #fit2 = {"indir": maindir+"/2015/fit_output_data_eleESER2", "type": "", "title": "Data histograms 2015"}
+  #Where to write output latex  
   outfile = "latex_output/data_analytic_vs_histos.tex"
-  #outfile = "latex_output/data_histos_2016_vs_2015.tex"
   f = open(outfile, "w")
   f.write(make_latex(fit1, fit2))

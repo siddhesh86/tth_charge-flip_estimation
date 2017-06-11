@@ -18,6 +18,15 @@
 
 using namespace std;
 
+/*! \file FitCP.cpp
+    \brief Fit 21 categories of electron pairs to 6 electron charge misID categories
+
+    Adapted from ttH multilepton analysis code in
+    https://github.com/stiegerb/cmgtools-lite/blob/80X_for2016basis_chargeFlips/TTHAnalysis/python/plotter/chargeFlips/chargeMisIdProb.cc
+    by  Andres Tiko <andres.tiko@cern.ch>
+*/
+
+
 #define N_CATEGORIES 21
 
 struct binSt{
@@ -137,14 +146,6 @@ int read_results(string infile, Chi2 &chi2){
     chi2.setPoint( mean, max(up_error, down_error), p1, p2);
     i++;
   }  
-  
-
-  //int i = 0;
-  /*while(EOF != fscanf(fp, " %[^,], %[^,], %[^,], %d, %f, %f, %f ", bins[i], means[i], up_errors[i], down_errors[i]))
-  {
-      printf("\n%d, %f, %f, %f ", bins[i], means[i], up_errors[i], down_errors[i]));
-      i++;
-  }*/
   fclose(fp);
   return 0;
 }
@@ -196,12 +197,6 @@ int main(int argc, char* argv[]) {
 
     if (isData) ; //temp
 
-    /*int catbins[N_CATEGORIES]; 
-    double means[N_CATEGORIES];
-    double up_errors[N_CATEGORIES];
-    double down_errors[N_CATEGORIES];
-    */
-    
     //==============================================
 
     Chi2 chi2;
@@ -278,6 +273,5 @@ int main(int argc, char* argv[]) {
     }
 
     f->Write();
-    f->Close();
-    
+    f->Close();    
 }
