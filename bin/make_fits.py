@@ -40,7 +40,7 @@ def read_fit_result(fit_file, postfit_file):
   
   try:
     #postFit distributions are scaled to scale factor 1, need to multiply by fitted number
-    bestFit = pass_h.Integral() / (fail_h.Integral() + pass_h.Integral())
+    bestFit = mu * pass_h.Integral() / (fail_h.Integral() + pass_h.Integral())
   except AttributeError:
     if fail_h.Integral() > 0:
       bestFit = 0.
@@ -66,7 +66,7 @@ def read_fit_result(fit_file, postfit_file):
   return (bestFit, fitHiErr, fitLoErr)
 
 #TODO: parallelize this for faster fitting
-def combine_cards(datacard_dir):
+def make_fits(datacard_dir):
   dc_dir = "%s/cards" % datacard_dir
   ws_dir = "%s/workspaces" % datacard_dir
   mkdir_p(dc_dir)
@@ -107,7 +107,7 @@ def combine_cards(datacard_dir):
     else:
         specific_settings = ""
         
-    command = "combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties " % (this_ws, fit_dir, specific_settings)
+    command = "combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties %s" % (this_ws, fit_dir, specific_settings)
     #Call combine
     call(command, shell = True)
 
@@ -120,7 +120,7 @@ def combine_cards(datacard_dir):
   #Clean up
   call("rm card*.txt", shell = True)
   i = 0
-  f = open("./fit_%s/results_cat_testtmp.txt" % (datacard_dir), "w")
+  f = open("./fit_%s/results_cat.txt" % (datacard_dir), "w")
   #Output fit results
   for fr in fit_results:
     print "RES: %d %.8f + %.8f - %.8f" % (i, fr[0], fr[1], fr[2])
