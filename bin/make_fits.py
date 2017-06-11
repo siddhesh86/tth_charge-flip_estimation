@@ -16,7 +16,6 @@ Script for running electron charge flip estimation fit
 def read_fit_result(fit_file, postfit_file):
   ROOT.gROOT.SetBatch(True)
   f2 = TFile(postfit_file)
-  #POSTFIT SCALED TO SIGNAL r = 1! -> make changes
   fail_h = f2.Get("fail_prefit/DY")
   pass_h = f2.Get("pass_prefit/DY")
 
@@ -45,13 +44,8 @@ def read_fit_result(fit_file, postfit_file):
     if fail_h.Integral() > 0:
       bestFit = 0.
     else: raise
-  print fail_h.Integral(), fail_h.GetEntries()  
-  #print fail_h.Integral(), pass_h.Integral(), bestFit, pass_h.Integral() / (fail_h.Integral() + pass_h.Integral()), f2.Get("fail_postfit"), f2.Get("pass_postfit"), 
-    
-  """print bestFit - mu * f2.Get("pass_prefit/DY").Integral() / (f2.Get("fail_prefit/DY").Integral() + f2.Get("pass_prefit/DY").Integral()), bestFit, mu * f2.Get("pass_prefit/DY").Integral() / (f2.Get("fail_prefit/DY").Integral() + f2.Get("pass_prefit/DY").Integral()), mu, f2.Get("pass_prefit/DY").Integral() / (f2.Get("fail_prefit/DY").Integral() + f2.Get("pass_prefit/DY").Integral())
-  assert(abs(bestFit - mu * f2.Get("pass_prefit/DY").Integral() / (f2.Get("fail_prefit/DY").Integral() + f2.Get("pass_prefit/DY").Integral())) < 0.0001)"""
-
-  print mu, muErr, muHiErr, muLoErr, bestFit
+  
+  #print mu, muErr, muHiErr, muLoErr, bestFit
   fitHiErr = max(muHiErr, muErr)/mu * bestFit
   fitLoErr = max(muLoErr, muErr)/mu * bestFit
   if fitHiErr > 1:
