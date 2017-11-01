@@ -13,7 +13,7 @@ Script for running muon charge flip estimation fit
 """
 
 
-datacard_dir = "output_data_mu_testNew"
+datacard_dir = "output_data_mu_1bin"
 
 
 def make_fit_mu():
@@ -38,15 +38,16 @@ def make_fit_mu():
     call("text2workspace.py %s -o %s -P HiggsAnalysis.CombinedLimit.TagAndProbeModel:tagAndProbe" % (this_card, this_ws), shell = True)
     fit_dir = "./fit_%s/bin%d" % (datacard_dir, bin)
     mkdir_p(fit_dir)
-    call("combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties --robustFit 1" % (this_ws, fit_dir), shell = True)
+    
+    print "combine -v0 -M AsymptoticNew %s --setPhysicsModelParameterRanges SF=0,100" % (this_ws)
+    call("combine -v0 -M AsymptoticNew %s --setPhysicsModelParameterRanges SF=0,100" % (this_ws), shell = True)
     #print "combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties --robustFit 1" % (this_ws, fit_dir)
+    #call("combine -v0 -M MaxLikelihoodFit %s --out %s --plots --saveNormalizations --skipBOnlyFit --saveShapes --saveWithUncertainties --robustFit 1" % (this_ws, fit_dir), shell = True)
     #print "PostFitShapesFromWorkspace -d %s -w %s -o %s/output_postfit.root -f %s/mlfit.root:fit_s --postfit --sampling --print" % ("card_%d.txt" % (bin), this_ws, fit_dir, fit_dir)
-    call("PostFitShapesFromWorkspace -d %s -w %s -o %s/output_postfit.root -f %s/mlfit.root:fit_s --postfit --sampling" % ("card_%d.txt" % (bin), this_ws, fit_dir, fit_dir), shell=True)
-    fit_results.append(read_fit_result("%s/mlfit.root" % fit_dir, "%s/output_postfit.root" % fit_dir))
-    #fit_results_mc.append(read_fit_result("%s/mlfit.root" % fit_dir, "%s/output_postfit.root" % fit_dir, isMC = True))
+    #call("PostFitShapesFromWorkspace -d %s -w %s -o %s/output_postfit.root -f %s/mlfit.root:fit_s --postfit --sampling" % ("card_%d.txt" % (bin), this_ws, fit_dir, fit_dir), shell=True)
     
   
-  call("rm card*.txt", shell = True)
+  """call("rm card*.txt", shell = True)
   i = 0
   f = open("./fit_%s/results_cat.txt" % (datacard_dir), "w")
   #print fit_results
@@ -55,6 +56,7 @@ def make_fit_mu():
     f.write("%d, %.8f, %.8f, %.8f\n" % (i, fr[0]/2, fr[1]/2, fr[2]/2))
     i += 1
   f.close()
-  
-  
-make_fit_mu()
+  """
+
+if __name__ == "__main__":
+  make_fit_mu()
