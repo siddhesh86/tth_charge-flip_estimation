@@ -125,15 +125,15 @@ def print_latex_header():
     
 def print_solution_latex(x, uncs, datastring):
   latex = """
-	    \multirow{2}{*}{%s}   & $0\leq\eta<1.479$    & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
-	                            & $1.479\leq\eta<2.5$  & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
+	    \multirow{2}{*}{%s}   & $0\leq\eta<1.479$    & $%.4f \pm %.4f$ & $%.4f \pm %.4f$ & $%.4f \pm %.4f$  \\\\
+	                            & $1.479\leq\eta<2.5$  & $%.4f \pm %.4f$ & $%.4f \pm %.4f$ & $%.4f \pm %.4f$  \\\\
 	    \hline""" % (datastring, x[0]*100, uncs[0]*100, x[1]*100, uncs[1]*100, x[2]*100, uncs[2]*100, x[3]*100, uncs[3]*100, x[4]*100, uncs[4]*100, x[5]*100, uncs[5]*100)
   print latex
 
 def print_ratios_latex(ratios, datastring):
   latex = """
-	    \multirow{2}{*}{%s}   & $0\leq\eta<1.479$    & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
-	                            & $1.479\leq\eta<2.5$  & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f & %.4f $\pm$ %.4f  \\\\
+	    \multirow{2}{*}{%s}   & $0\leq\eta<1.479$    & $%.4f \pm %.4f$ & $%.4f \pm %.4f$ & $%.4f \pm %.4f$  \\\\
+	                            & $1.479\leq\eta<2.5$  & $%.4f \pm %.4f$ & $%.4f \pm %.4f$ & $%.4f \pm %.4f$  \\\\
 	    \hline""" % (datastring, ratios[0][0]*100, ratios[0][1]*100, ratios[1][0]*100, ratios[1][1]*100, ratios[2][0]*100, ratios[2][1]*100, ratios[3][0]*100, ratios[3][1]*100, ratios[4][0]*100, ratios[4][1]*100, ratios[5][0]*100, ratios[5][1]*100)
   print latex
 
@@ -157,6 +157,7 @@ def calculate_solution(categoryRatios, exclude_bins, fitname, fittypestring, dat
 
 if __name__ == "__main__":
   #Now run from plot_pulls_all.py
+  #Only use this for testing
   exclude_bin_names = []
   exclude_bins = bin_names_to_numbers(exclude_bin_names)
   for datastring in ["pseudodata", "data"]:

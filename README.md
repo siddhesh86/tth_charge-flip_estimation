@@ -4,6 +4,7 @@
 Using combine requires an older version of CMSSW
 
 Instructions for installing combine are taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggsAnalysisCombinedLimit#ROOT6_SLC6_release_CMSSW_7_4_X (version 7_4_7 at the time)
+#TODO: now a newer version of combine available
 
 ```bash
 source /cvmfs/cms.cern.ch/cmsset_default.sh
@@ -27,12 +28,18 @@ scramv1 b clean; scramv1 b -j8
 
 Installing the code proceeds as follows:
 ```bash
-git clone git@github.com:HEP-KBFI/tth_charge-flip_estimation.git $CMSSW_BASE/src/tthAnalysis/ChargeFlipEstimation
+git clone https://github.com/HEP-KBFI/tth_charge-flip_estimation.git $CMSSW_BASE/src/tthAnalysis/ChargeFlipEstimation
 ```
 
 ## Running
+NB! Some inputfile locations in the following files are hardcoded, TODO make configurable
+
 ### Datacard creation
-For datacard creation, run:
+1. Create pseudodata ntuples and make sure there are no <0 bins
+```bash
+python create_pseudodata_datacard.py
+```
+2. For datacard creation, run:
 ```bash
 ChargeFlipDC
 ```
@@ -41,15 +48,20 @@ ChargeFlipDC
 python make_fits.py
 ```
 
-### Final fit
+3. To choose categories for dropping because of correlations, make pull plots and perform the matrix inversion:
+Run
 ```bash
-FitCF
+python plot_pulls_all.py
 ```
 
-##Miscellaneous
-###Setting fit plots to logarithmic scale
+
+## Miscellaneous
+### To also create fit plots in logarithmic scale
 Run
 ```bash
 bash macros/set_plots_to_logscale.sh
 ```
+before running "make_fits.py"
 This replaces the MaxLikelihoodFit.cpp that is part of Combine with a modified version that also produces the plots in logscale
+
+

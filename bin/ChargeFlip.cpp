@@ -30,14 +30,16 @@ using namespace std;
     \brief Generate datacards for charge flip fit
 
     @author  Andres Tiko <andres.tiko@cern.ch>    
-
-    TODO: paths hardcoded, should make configurable, see comments
 */
 
-
-int histograms_main() {
+/*!
+    indir - directory with histograms for data and pseudodata created by create_pseudodata_datacard.py
+    outdir - where to put output, relative name
+    type: data or pseudodata
+*/
+int histograms_main(string indir, string outdir, string type) {
   // source the input files containing the datacard shapes, change path accordingly
-	string aux_shapes = "/home/andres/ttHAnalysis/2016/histosCF_summer_June6/datacards/charge_flip/";
+	string aux_shapes = indir;
 
 	// Create an empty CombineHarvester instance that will hold all of the
 	// datacard configuration and histograms etc.
@@ -50,8 +52,11 @@ int histograms_main() {
 	VString chns = {"SS", "OS"};
 
   map<string, VString> bkg_procs;
-  bkg_procs["SS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
-  bkg_procs["OS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
+  //bkg_procs["SS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
+  //bkg_procs["OS"] = {"DY_fake", "WJets", "Singletop", "Diboson", "TTbar"};
+  //W+jets excluded as not enough statistics for a reasonable shape
+  bkg_procs["SS"] = {"DY_fake", "Singletop", "Diboson", "TTbar"};
+  bkg_procs["OS"] = {"DY_fake", "Singletop", "Diboson", "TTbar"};
   map<string, VString> sig_procs;
   sig_procs["SS"] = {"DY"};
   sig_procs["OS"] = {"DY"};
@@ -95,17 +100,17 @@ int histograms_main() {
 
   //syst on luminosity
   cb.cp().channel({"SS"}).signals()
-	  .AddSyst(cb, "lumi", "lnN", SystMap<>::init(1.05));
+	  .AddSyst(cb, "lumi", "lnN", SystMap<>::init(1.15));
   cb.cp().channel({"SS"}).backgrounds()
-	  .AddSyst(cb, "lumi", "lnN", SystMap<>::init(1.05));
+	  .AddSyst(cb, "lumi", "lnN", SystMap<>::init(1.15));
 
   //systs on normalization
   cb.cp().channel({"SS"}).signals()
-	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(2.0));
+	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"SS"}).process({"DY_fake"})
 	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(1.5));
-	cb.cp().channel({"SS"}).process({"WJets"})
-	  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(1.5));
+	//cb.cp().channel({"SS"}).process({"WJets"})
+	//  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(5.0));
 	cb.cp().channel({"SS"}).process({"Singletop"})
 	  .AddSyst(cb, "singletop_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"SS"}).process({"Diboson"})
@@ -115,17 +120,17 @@ int histograms_main() {
 	
   //syst on luminosity
   cb.cp().channel({"OS"}).signals()
-	  .AddSyst(cb, "lumi", "lnN", SystMap<>::init(1.05));
+	  .AddSyst(cb, "lumi", "lnN", SystMap<>::init(1.15));
   cb.cp().channel({"OS"}).backgrounds()
-	  .AddSyst(cb, "lumi", "lnN", SystMap<>::init(1.05));
+	  .AddSyst(cb, "lumi", "lnN", SystMap<>::init(1.15));
 
   //syst on normalization
 	cb.cp().channel({"OS"}).signals()
-	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(2.0));
+	  .AddSyst(cb, "DY_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"OS"}).process({"DY_fake"})
 	  .AddSyst(cb, "fake_norm", "lnN", SystMap<>::init(1.5));
-	cb.cp().channel({"OS"}).process({"WJets"})
-	  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(1.5));
+	//cb.cp().channel({"OS"}).process({"WJets"})
+	//  .AddSyst(cb, "wjets_norm", "lnN", SystMap<>::init(5.0));
 	cb.cp().channel({"OS"}).process({"Singletop"})
 	  .AddSyst(cb, "singletop_norm", "lnN", SystMap<>::init(1.5));
 	cb.cp().channel({"OS"}).process({"Diboson"})
@@ -172,7 +177,7 @@ int histograms_main() {
 	for (string era : {"13TeV"}) {
 		for (string chn : chns) {
 // ! Change filename here for data vs. pseudodata
-			string file = aux_shapes+ "/prepareDatacards_pseudodata_charge_flip_mass_ll.root";
+			string file = aux_shapes + "/prepareDatacards_" + type + "_charge_flip_mass_ll.root";
 
 			cb.cp().channel({chn}).backgrounds().ExtractShapes(
 					file, "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS", "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS_$SYSTEMATIC");
@@ -204,7 +209,8 @@ int histograms_main() {
 
   for (string chn : chns) {
 // ! Where to write output datacards, update accordingly
-    string folder = ("/home/andres/tth/chargeFlip/CMSSW_7_4_7/src/tthAnalysis/ChargeFlipEstimation/bin/output_pseudodata_summer_June6/cards/"+chn+"cards/").c_str();
+    cout << "OUT: " << "output_" + type + "_" + outdir + "/cards/"+chn+"cards/" << endl;
+    string folder = ("output_" + type + "_" + outdir + "/cards/"+chn+"cards/").c_str();
     
     boost::filesystem::create_directories(folder);
     boost::filesystem::create_directories(folder + "/common");
@@ -221,6 +227,10 @@ int histograms_main() {
 }
 
 int main() {
-    histograms_main();
+    std::string indir = "/home/andres/ttHAnalysis/2016/histosCF_summer_Aug25_noMassScaling/datacards/charge_flip/";
+    std::string outdir = "summer_Aug25";
+    
+    histograms_main(indir, outdir, "data");
+    histograms_main(indir, outdir, "pseudodata");
 }
 

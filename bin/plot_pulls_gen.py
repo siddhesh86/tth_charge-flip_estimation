@@ -168,7 +168,8 @@ def make_pull_plot_21(misIDRatios, catRatios, name = "gen", mydir = "pull_plots_
     #chi2s.append(test1.Chi2Test(test2, "WW"))
     #Chi2 method from histogram doesn't give expected results, will calculate manually
     chi2s[bin_names_composite_nice[b-1]] = abs(test1.GetBinContent(1) - test2.GetBinContent(1)) / (test1.GetBinError(1) + test2.GetBinError(1))
-    
+    #print b, test1.GetBinContent(1), test2.GetBinContent(1)    
+
     gen_plot.Add(pull_plots[b-1])
     sum_plot.Add(sum_plots[b-1])
 
@@ -176,7 +177,7 @@ def make_pull_plot_21(misIDRatios, catRatios, name = "gen", mydir = "pull_plots_
     gen_plot.SetAxisRange(y_range[0], y_range[1],"Y")
   
   gen_plot.SetLineColor(ROOT.kRed)
-  gen_plot.SetLineWidth(2)
+  gen_plot.SetLineWidth(3)
   sum_plot.SetLineWidth(2)
   title = make_title(name, excluded)
   gen_plot.SetNameTitle(title, title)  
