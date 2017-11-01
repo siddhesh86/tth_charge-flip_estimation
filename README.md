@@ -43,12 +43,11 @@ python create_pseudodata_datacard.py
 ```bash
 ChargeFlipDC
 ```
-### Fit 21 electron pair categories and make plots
+3. Fit 21 electron pair categories and make plots
 ```bash
 python make_fits.py
 ```
-
-3. To choose categories for dropping because of correlations, make pull plots and perform the matrix inversion:
+4. To choose categories for dropping because of correlations, make pull plots and perform the matrix inversion:
 Run
 ```bash
 python plot_pulls_all.py
