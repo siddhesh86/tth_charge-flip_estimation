@@ -65,10 +65,22 @@ def create_pseudodata(infile, outfile_data, outfile_pseudodata, channel, rebin=1
             dirname = "%s_%s_%s" % (prefix, charge, cat)
             cd = fout.mkdir(dirname)
             cd_pseudo = fout_pseudo.mkdir(dirname)
+            data_histo = ''
             for sample in samples:
                 cd.cd()
-                #Read nominal histograms
-                histo_nominal = f.Get("%s/x_%s"  % (dirname, sample))
+                #Read nominal histograms                
+                #histo_nominal = f.Get("%s/x_%s"  % (dirname, sample))
+                histoname = "%s/%s"  % (dirname, sample)
+                print("%s"  % histoname)
+                histo_nominal = ''
+                #histo_nominal = f.Get("%s/%s"  % (dirname, sample))
+                histo_nominal = f.Get(histoname)
+                #print "Histo:", histo_nominal
+                #if histo_nominal is None:
+                if not histo_nominal :
+                    print ("Histogram %s could not fetch" % histoname)
+                    continue
+                print("\t\t running for %s histogram" % histoname)
                 histo_nominal.Rebin(rebin)
                 #print "%s/x_%s"  % (dirname, sample)
                 for b in range(1, histo_nominal.GetNbinsX()+1):
@@ -96,7 +108,10 @@ def create_pseudodata(infile, outfile_data, outfile_pseudodata, channel, rebin=1
                 for syst in systematics[channel]:
                   if syst.startswith("CMS_ttHl_electronER") and not sample == "DY": continue
                   if syst.startswith("CMS_ttHl_muonER") and not sample == "DY": continue
-                  histo = f.Get("%s/x_%s_%s"  % (dirname, sample, syst))
+                  #histo = f.Get("%s/x_%s_%s"  % (dirname, sample, syst))
+                  histoname = "%s/%s_%s"  % (dirname, sample, syst)
+                  histo = f.Get(histoname)
+                  print("\t\t\t\t Systematic %s"  % histoname)
                   histo.Rebin(rebin)
                   cd.cd() 
                   #print histo, dirname, sample, syst
@@ -109,7 +124,12 @@ def create_pseudodata(infile, outfile_data, outfile_pseudodata, channel, rebin=1
                   histo.Write()
                   cd_pseudo.cd() 
                   histo.Write()
-            data_histo.SetNameTitle("x_data_obs", "x_data_obs")
+
+            if not data_histo:
+                print("data_histo is null.  'continue'")
+                continue
+            #data_histo.SetNameTitle("x_data_obs", "x_data_obs")
+            data_histo.SetNameTitle("data_obs", "data_obs")
             #Generate poisson yields from MC expectation for pseudodata
             for b in range(1, data_histo.GetNbinsX()+1):
                 #print data_histo.GetBinContent(b)
@@ -125,7 +145,8 @@ def create_pseudodata(infile, outfile_data, outfile_pseudodata, channel, rebin=1
 
 if __name__ == "__main__":
   np.random.seed(123)
-  indir = "/home/andres/ttHAnalysis/2016/histosCF_summer_Aug25_noMassScaling/datacards/charge_flip/"
+  #indir = "/home/andres/ttHAnalysis/2016/histosCF_summer_Aug25_noMassScaling/datacards/charge_flip/"
+  indir = "/home/ssawant/ttHAnalysis/2016/histosCF_summer_June6/datacards/charge_flip/"
   infile = "prepareDatacards_charge_flip_mass_ll.root"
   datafile = "prepareDatacards_data_charge_flip_mass_ll.root"
   pseudodatafile = "prepareDatacards_pseudodata_charge_flip_mass_ll.root"
