@@ -178,11 +178,21 @@ int histograms_main(string indir, string outdir, string type) {
 		for (string chn : chns) {
 // ! Change filename here for data vs. pseudodata
 			string file = aux_shapes + "/prepareDatacards_" + type + "_charge_flip_mass_ll.root";
+			//string histoname = "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS", "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS_$SYSTEMATIC";
+			//cout << "\t\t@S: file:" << file << ",  " <<  histoname << endl;
 
+			/*
 			cb.cp().channel({chn}).backgrounds().ExtractShapes(
 					file, "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS", "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS_$SYSTEMATIC");
 			cb.cp().channel({chn}).signals().ExtractShapes(
 					file, "ttH_charge_flip_" + chn +"_$BIN/x_$PROCESS", "ttH_charge_flip_" + chn+"_$BIN/x_$PROCESS_$SYSTEMATIC");
+			*/
+			
+			cb.cp().channel({chn}).backgrounds().ExtractShapes(
+					file, "ttH_charge_flip_" + chn+"_$BIN/$PROCESS", "ttH_charge_flip_" + chn+"_$BIN/$PROCESS_$SYSTEMATIC");
+                        cb.cp().channel({chn}).signals().ExtractShapes(
+					file, "ttH_charge_flip_" + chn +"_$BIN/$PROCESS", "ttH_charge_flip_" + chn+"_$BIN/$PROCESS_$SYSTEMATIC");
+
 		}
 	}
 
@@ -227,10 +237,16 @@ int histograms_main(string indir, string outdir, string type) {
 }
 
 int main() {
-    std::string indir = "/home/andres/ttHAnalysis/2016/histosCF_summer_Aug25_noMassScaling/datacards/charge_flip/";
-    std::string outdir = "summer_Aug25";
+  //std::string indir = "/home/andres/ttHAnalysis/2016/histosCF_summer_Aug25_noMassScaling/datacards/charge_flip/";
+  //std::string outdir = "summer_Aug25";
     
+    std::string indir = "/home/ssawant/ttHAnalysis/2016/histosCF_summer_June6/datacards/charge_flip/";
+    std::string outdir = "summer_June6";          
+
+    cout << "Siddh here1" << endl;
     histograms_main(indir, outdir, "data");
+    cout << "Siddh here2" << endl;
     histograms_main(indir, outdir, "pseudodata");
+    cout << "Siddh here3" << endl;
 }
 
